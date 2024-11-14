@@ -68,7 +68,6 @@ jobs:
         steps:
             - name: List files in kubernetes directory
               run: |
-                  ls -l kubernetes
                   li -l
             - name: Checkout code
               uses: actions/checkout@v3

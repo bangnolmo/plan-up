@@ -22,8 +22,19 @@ jobs:
               with:
                   node-version: "18"
 
+            - name: Cache Node.js modules
+              uses: actions/cache@v3
+              with:
+                  path: ~/.npm
+                  key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+                  restore-keys: |
+                      ${{ runner.os }}-node-
+
             - name: Install dependencies
               run: npm install
+
+            - name: Run tests
+              run: npm test
 
             - name: Build Next.js app
               run: npm run build
@@ -34,6 +45,9 @@ jobs:
                   username: ${{ secrets.DOCKER_USERNAME }}
                   password: ${{ secrets.DOCKER_PASSWORD }}
 
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v2
+
             - name: Build and push Docker image
               uses: docker/build-push-action@v4
               with:
@@ -42,3 +56,43 @@ jobs:
                   tags: |
                       ${{ env.DOCKER_IMAGE }}:${{ github.sha }}
                       ${{ env.DOCKER_IMAGE }}:latest
+
+            - name: Scan Docker image for vulnerabilities
+              uses: aquasecurity/trivy-action@master
+              with:
+                  image-ref: ${{ env.DOCKER_IMAGE }}:${{ github.sha }}
+
+    deploy:
+        needs: build_and_push
+        runs-on: ubuntu-latest
+        environment:
+            name: production
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
+
+            - name: Configure AWS credentials
+              uses: aws-actions/configure-aws-credentials@v2
+              with:
+                  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                  aws-region: ${{ secrets.AWS_REGION }}
+
+            - name: Install kubectl
+              run: |
+                  curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.21.2/2021-07-05/bin/linux/amd64/kubectl
+                  chmod +x kubectl
+                  sudo mv kubectl /usr/local/bin/
+
+            - name: Update kubeconfig
+              run: |
+                  aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region ${{ secrets.AWS_REGION }}
+
+            - name: Set image in Kubernetes deployment
+              run: |
+                  kubectl set image deployment/my-frontend-deployment my-frontend=${{ env.DOCKER_IMAGE }}:${{ github.sha }}
+
+            - name: Rollout status
+              run: |
+                  kubectl rollout status deployment/my-frontend-deployment

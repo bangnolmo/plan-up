@@ -3,7 +3,7 @@ name: CI/CD Pipeline
 on:
     push:
         branches:
-            - feature/add-github-action
+            - main
     workflow_dispatch:
 
 env:

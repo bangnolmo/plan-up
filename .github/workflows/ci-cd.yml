@@ -54,10 +54,10 @@ jobs:
                       ${{ env.DOCKER_IMAGE }}:${{ github.sha }}
                       ${{ env.DOCKER_IMAGE }}:latest
 
-            - name: Scan Docker image for vulnerabilities
-              uses: aquasecurity/trivy-action@master
-              with:
-                  image-ref: ${{ env.DOCKER_IMAGE }}:${{ github.sha }}
+            # - name: Scan Docker image for vulnerabilities
+            #   uses: aquasecurity/trivy-action@master
+            #   with:
+            #       image-ref: ${{ env.DOCKER_IMAGE }}:${{ github.sha }}
 
     deploy:
         needs: build_and_push

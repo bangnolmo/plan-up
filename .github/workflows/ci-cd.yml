@@ -91,8 +91,8 @@ jobs:
 
             - name: Set image in Kubernetes deployment
               run: |
-                  kubectl set image deployment/my-frontend-deployment my-frontend=${{ env.DOCKER_IMAGE }}:${{ github.sha }}
+                  kubectl set image deployment/nextjs-deployment nextjs=${{ env.DOCKER_IMAGE }}:${{ github.sha }}
 
             - name: Rollout status
               run: |
-                  kubectl rollout status deployment/my-frontend-deployment
+                  kubectl rollout status deployment/nextjs-deployment

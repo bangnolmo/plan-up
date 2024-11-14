@@ -90,6 +90,15 @@ jobs:
               run: |
                   aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region ${{ secrets.AWS_REGION }}
 
+            - name: Apply Kubernetes manifests
+              run: |
+                  kubectl apply -f kubernetes/deployment.yaml -n ${{ env.NAMESPACE }}
+                  kubectl apply -f kubernetes/service.yaml -n ${{ env.NAMESPACE }}
+
+            - name: Check for existing deployments in Kubernetes
+              run: |
+                  kubectl get deployments -n ${{ env.NAMESPACE }}
+
             - name: Set image in Kubernetes deployment
               run: |
                   kubectl set image deployment/nextjs-deployment nextjs=${{ env.DOCKER_IMAGE }}:${{ github.sha }} -n ${{ env.NAMESPACE }}

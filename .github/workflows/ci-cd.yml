@@ -9,20 +9,21 @@ on:
 env:
     DOCKER_IMAGE: heung115/my-nextjs-app
     NAMESPACE: nextjs
+
 jobs:
     build_and_push:
         runs-on: ubuntu-latest
 
         steps:
-            - name: Checkout code
+            - name: 코드 체크아웃
               uses: actions/checkout@v3
 
-            - name: Set up Node.js
+            - name: Node.js 설정
               uses: actions/setup-node@v3
               with:
                   node-version: "18"
 
-            - name: Cache Node.js modules
+            - name: Node.js 모듈 캐시
               uses: actions/cache@v3
               with:
                   path: ~/.npm
@@ -30,22 +31,24 @@ jobs:
                   restore-keys: |
                       ${{ runner.os }}-node-
 
-            - name: Install dependencies
-              run: npm install
+            - name: 의존성 설치
+              run: npm ci
 
-            - name: Build Next.js app
+            - name: Next.js 애플리케이션 빌드
               run: npm run build
 
-            - name: Log in to Docker Hub
+            - name: Docker Hub 로그인
               uses: docker/login-action@v2
               with:
                   username: ${{ secrets.DOCKER_USERNAME }}
                   password: ${{ secrets.DOCKER_PASSWORD }}
 
-            - name: Set up Docker Buildx
+            - name: Docker Buildx 설정
               uses: docker/setup-buildx-action@v2
+              with:
+                  install: true
 
-            - name: Build and push Docker image
+            - name: Docker 이미지 빌드 및 푸시
               uses: docker/build-push-action@v4
               with:
                   context: .
@@ -53,11 +56,8 @@ jobs:
                   tags: |
                       ${{ env.DOCKER_IMAGE }}:${{ github.sha }}
                       ${{ env.DOCKER_IMAGE }}:latest
-
-            # - name: Scan Docker image for vulnerabilities
-            #   uses: aquasecurity/trivy-action@master
-            #   with:
-            #       image-ref: ${{ env.DOCKER_IMAGE }}:${{ github.sha }}
+                  cache-from: type=gha
+                  cache-to: type=gha,mode=max
 
     deploy:
         needs: build_and_push
@@ -66,46 +66,35 @@ jobs:
             name: production
 
         steps:
-            - name: Checkout code
+            - name: 코드 체크아웃
               uses: actions/checkout@v3
 
-            - name: List files in kubernetes directory
-              run: |
-                  ls -l
-            - name: Configure AWS credentials
-              uses: aws-actions/configure-aws-credentials@v2
+            - name: Google Cloud 인증
+              uses: google-github-actions/auth@v1
               with:
-                  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-                  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                  aws-region: ${{ secrets.AWS_REGION }}
+                  credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-            - name: Install kubectl
-              run: |
-                  curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.21.2/2021-07-05/bin/linux/amd64/kubectl
-                  chmod +x kubectl
-                  sudo mv kubectl /usr/local/bin/
+            - name: Google Cloud SDK 설정
+              uses: google-github-actions/setup-gcloud@v1
+              with:
+                  project_id: ${{ secrets.GCP_PROJECT_ID }}
+                  install_components: "kubectl"
 
-            - name: Create Kubernetes namespace
-              run: |
-                  kubectl create namespace ${{ env.NAMESPACE }} || echo "Namespace '${{ env.NAMESPACE }}' already exists"
+            - name: GKE 자격 증명 가져오기
+              uses: google-github-actions/get-gke-credentials@v1
+              with:
+                  cluster_name: ${{ secrets.GKE_CLUSTER_NAME }}
+                  location: ${{ secrets.GKE_ZONE }}
 
-            - name: Update kubeconfig
-              run: |
-                  aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region ${{ secrets.AWS_REGION }}
+            - name: Kubernetes 네임스페이스 생성
+              run: kubectl create namespace ${{ env.NAMESPACE }} || echo "Namespace '${{ env.NAMESPACE }}' already exists"
 
-            - name: Apply Kubernetes manifests
+            - name: Kubernetes 매니페스트 적용
               run: |
                   kubectl apply -f kubernetes/deployment.yml -n ${{ env.NAMESPACE }}
                   kubectl apply -f kubernetes/service.yml -n ${{ env.NAMESPACE }}
 
-            - name: Check for existing deployments in Kubernetes
-              run: |
-                  kubectl get deployments -n ${{ env.NAMESPACE }}
-
-            - name: Set image in Kubernetes deployment
+            - name: Kubernetes 배포 이미지 업데이트
               run: |
                   kubectl set image deployment/nextjs-deployment nextjs=${{ env.DOCKER_IMAGE }}:${{ github.sha }} -n ${{ env.NAMESPACE }}
-
-            - name: Rollout status
-              run: |
                   kubectl rollout status deployment/nextjs-deployment -n ${{ env.NAMESPACE }}

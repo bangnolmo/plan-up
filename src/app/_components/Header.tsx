@@ -23,17 +23,17 @@ export default function App() {
 
             <NavbarContent className="hidden sm:flex gap-8" justify="center">
                 <NavbarItem>
-                    <Link color={isActive("/") ? "primary" : "foreground"} href="/">
+                    <Link color={isActive("/") ? "primary" : "foreground"} href="/" className="font-medium">
                         나의 시간표
                     </Link>
                 </NavbarItem>
                 <NavbarItem>
-                    <Link color={isActive("/wizard") ? "primary" : "foreground"} href="/wizard">
+                    <Link color={isActive("/wizard") ? "primary" : "foreground"} href="/wizard" className="font-medium">
                         시간표 만들기
                     </Link>
                 </NavbarItem>
                 <NavbarItem>
-                    <Link color={isActive("/lecture") ? "primary" : "foreground"} href="/lecture">
+                    <Link color={isActive("/lecture") ? "primary" : "foreground"} href="/lecture" className="font-medium">
                         개설과목 조회
                     </Link>
                 </NavbarItem>

@@ -6,12 +6,12 @@ import { Tabs, Tab, Input, Link, Button, Card, CardBody } from "@nextui-org/reac
 import React from "react";
 
 const Login = () => {
-    const [selected, setSelected] = React.useState("login");
+    const [selected, setSelected] = React.useState<string>("login");
 
-    // const handleSelectionChange = (newSelected: React.SetStateAction<string>) => {
-    //     setSelected(newSelected);
-    //     console.log("Selected:", newSelected);
-    // };
+    const handleSelectionChange = (newSelected: string | number) => {
+        setSelected(newSelected as string);
+        console.log("Selected:", newSelected);
+    };
 
     return (
         <>
@@ -20,7 +20,7 @@ const Login = () => {
             <div className="flex justify-center items-center">
                 <Card className="max-w-full w-[340px] h-[300px]">
                     <CardBody className="overflow-hidden">
-                        <Tabs fullWidth size="md" aria-label="Tabs form" selectedKey={selected} onSelectionChange={setSelected}>
+                        <Tabs fullWidth size="md" aria-label="Tabs form" selectedKey={selected} onSelectionChange={handleSelectionChange}>
                             <Tab key="login" title="로그인">
                                 <form className="flex flex-col gap-4">
                                     <Input isRequired label="이메일" placeholder="학교 이메일로 로그인하세요" type="email" />

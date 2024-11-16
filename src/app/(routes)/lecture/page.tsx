@@ -24,6 +24,7 @@ const DynamicLectureTable = () => {
     const [lectures, setLectures] = useState(mockLectures);
 
     useEffect(() => {
+        console.log(setLectures);
         // 예시로 데이터를 API에서 가져오는 로직 추가
         // fetch('/api/lectures')
         //   .then((response) => response.json())

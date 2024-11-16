@@ -9,7 +9,7 @@ on:
 
 env:
     DOCKER_IMAGE: heung115/my-nextjs-app
-    NAMESPACE: nextjs
+    NAMESPACE: frontend
 
 jobs:
     build_and_push:

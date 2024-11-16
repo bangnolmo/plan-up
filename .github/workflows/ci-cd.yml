@@ -18,18 +18,11 @@ jobs:
             - name: 코드 체크아웃
               uses: actions/checkout@v3
 
-            - name: Node.js 설정
+            - name: Node.js 설정 및 캐시
               uses: actions/setup-node@v3
               with:
                   node-version: "18"
-
-            - name: Node.js 모듈 캐시
-              uses: actions/cache@v3
-              with:
-                  path: ~/.npm
-                  key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-                  restore-keys: |
-                      ${{ runner.os }}-node-
+                  cache: "npm"
 
             - name: 의존성 설치
               run: npm ci
@@ -58,6 +51,8 @@ jobs:
                       ${{ env.DOCKER_IMAGE }}:latest
                   cache-from: type=gha
                   cache-to: type=gha,mode=max
+                  build-args: |
+                      NODE_ENV=production
 
     deploy:
         needs: build_and_push

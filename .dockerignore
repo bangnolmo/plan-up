@@ -1,0 +1,34 @@
+# Node_modules 폴더 제외 (Docker 내에서 다시 설치)
+node_modules
+npm-debug.log
+yarn-error.log
+
+# 빌드 출력 폴더 (Docker 내에서 다시 빌드)
+.next
+out
+
+# 환경 파일 (민감 정보 보호)
+.env
+.env.local
+.env.development
+.env.development.local
+.env.test
+.env.test.local
+.env.production
+.env.production.local
+
+# 캐시 및 로그 파일
+*.log
+.cache
+
+# OS와 IDE/에디터에서 생성되는 불필요한 파일
+.DS_Store
+Thumbs.db
+.vscode
+.idea
+*.swp
+
+# 테스트와 문서 관련 파일
+__tests__
+coverage
+*.md

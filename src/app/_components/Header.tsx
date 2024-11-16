@@ -17,13 +17,13 @@ export default function App() {
             <NavbarBrand>
                 <Link href="/" className="">
                     <Logo />
-                    <p className="font-bold text-gray-900">플랜업</p>
+                    <p className="font-bold text-gray-900">PlanUp</p>
                 </Link>
             </NavbarBrand>
 
             <NavbarContent className="hidden sm:flex gap-8" justify="center">
                 <NavbarItem>
-                    <Link color={isActive("/") ? "primary" : "foreground"} href="/" className="font-medium">
+                    <Link color={isActive("/timetable") ? "primary" : "foreground"} href="/timetable" className="font-medium">
                         나의 시간표
                     </Link>
                 </NavbarItem>

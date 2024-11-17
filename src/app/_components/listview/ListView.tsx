@@ -10,17 +10,26 @@ import {
   TableRow,
   TableCell,
 } from "@nextui-org/react";
+import { DeleteIcon } from "../Icon/DeleteIcon";
+import { AddIcon } from "../Icon/AddIcon";
+import IconButton from "../IconButton/IconButton";
 
 interface ListViewProps {
   columns: { key: string; label: string }[];
   items: any[];
+  actionType?: "none" | "delete" | "add";
 }
 
-const ListView: React.FC<ListViewProps> = ({ columns, items }) => {
+const ListView: React.FC<ListViewProps> = ({ columns, items, actionType = "none" }) => {
+  // "액션" 열을 조건부로 추가
+  const dynamicColumns = actionType !== "none"
+    ? [...columns, { key: "action", label: "Action" }]
+    : columns;
+
   return (
     <div className="overflow-x-auto">
       <Table aria-label="Dynamic Table" selectionMode="none">
-        <TableHeader columns={columns}>
+        <TableHeader columns={dynamicColumns}>
           {(column) => (
             <TableColumn key={column.key}>{column.label}</TableColumn>
           )}
@@ -28,10 +37,33 @@ const ListView: React.FC<ListViewProps> = ({ columns, items }) => {
         <TableBody items={items}>
           {(item) => (
             <TableRow key={item.id}>
-              {columns.map((column) => (
-                <TableCell key={column.key}>
-                  {item[column.key as keyof typeof item]}
-                </TableCell>
+              {dynamicColumns.map((column) => (
+                column.key === "action" ? (
+                  <TableCell key={column.key}>
+                    {actionType === "delete" && (
+                      <IconButton
+                        aria-label="Delete item"
+                        onPress={() => console.log(item.id)}
+                        icon={<DeleteIcon />}
+                        color="danger"
+                        ariaLabel="Delete"
+                      />
+                    )}
+                    {actionType === "add" && (
+                      <IconButton
+                        aria-label="Add item"
+                        onPress={() => console.log(`Add action for item ${item.id}`)}
+                        icon={<AddIcon />}
+                        color="primary"
+                        ariaLabel="Add"
+                      />
+                    )}
+                  </TableCell>
+                ) : (
+                  <TableCell key={column.key}>
+                    {item[column.key as keyof typeof item]}
+                  </TableCell>
+                )
               ))}
             </TableRow>
           )}

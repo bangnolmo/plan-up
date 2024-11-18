@@ -36,7 +36,7 @@ const DynamicLectureTable = () => {
             <Header />
             <PageInfo title="개설과목 조회" description="개설 과목을 조회할 수 있어요." />
             <SearchForm />
-            <ListView columns={columns} items={lectures} actionType="none" />
+            <ListView columns={columns} items={lectures} actionType="add" />
         </>
     );
 };

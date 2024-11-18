@@ -6,6 +6,7 @@ import { mockLectures } from "@/app/_mocks/mockLectureData";
 import Header from "@/app/_components/Header";
 import PageInfo from "@/app/_components/PageInfo";
 import SearchForm from "@/app/_components/searchform/SearchForm";
+import { handleCartAddClick } from "@/app/_cart/cartButtonHandler";
 
 const columns = [
     { key: "lecture_name", label: "강의명" },
@@ -36,7 +37,7 @@ const DynamicLectureTable = () => {
             <Header />
             <PageInfo title="개설과목 조회" description="개설 과목을 조회할 수 있어요." />
             <SearchForm />
-            <ListView columns={columns} items={lectures} actionType="add" />
+            <ListView columns={columns} items={lectures} actionType="add" onActionButtonClick={handleCartAddClick} />
         </>
     );
 };

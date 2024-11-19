@@ -1,0 +1,42 @@
+name: Frontend Test with Error Logging
+
+on:
+    push:
+        branches:
+            - feature/*
+
+jobs:
+    frontend_test:
+        name: Test Frontend
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Check out code
+              uses: actions/checkout@v3
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: "18"
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Run Frontend Tests
+              id: test_frontend
+              run: |
+                  npm test 2>&1 | tee test.log
+                  if [ $? -ne 0 ]; then
+                    echo "error_message=$(tail -n 10 test.log)" >> $GITHUB_OUTPUT
+                  fi
+              shell: bash
+              continue-on-error: true
+
+            - name: Notify on Failure
+              if: failure()
+              run: |
+                  echo "Frontend tests failed. Sending notification..."
+                  echo "Error Message: ${{ steps.test_frontend.outputs.error_message }}"
+                  curl -X POST -H "Content-Type: application/json" \
+                    -d "{\"content\": \"📣 **프론트엔드 테스트가 실패했습니다.**\n\`\`\`${{ steps.test_frontend.outputs.error_message }}\`\`\`\"}" \
+                    ${{ secrets.DISCORD_WEBHOOK_URL }}

@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import ListView from "@/app/_components/listview/ListView";
 // import SearchForm from "@/app/_components/searchform/SearchForm";
 import { getCookie } from "@/app/_cookieManager/cookieManager";
+import { handleCartDeleteClick } from "@/app/_cart/cartButtonHandler";
 
 const columns = [
     { key: "lecture_name", label: "강의명" },
@@ -43,7 +44,7 @@ const Wizard = () => {
         <>
             <Header />
             <PageInfo title="시간표 만들기" description="시간표를 만들 수 있어요." />
-             <ListView columns={columns} items={lectures} actionType="delete" />
+             <ListView columns={columns} items={lectures} actionType="delete" onActionButtonClick={handleCartDeleteClick} />
         </>
     );
 };

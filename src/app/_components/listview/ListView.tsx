@@ -44,12 +44,17 @@ const ListView: React.FC<ListViewProps> = ({ columns, items, actionType = "none"
                 column.key === "action" ? (
                   <TableCell key={column.key}>
                     {actionType === "delete" && (
-                      <IconButton
+                        <IconButton
                         aria-label="Delete item"
-                        onPress={() => console.log(item.id)}
+                        onPress={() => {
+                          if (onActionButtonClick){
+                            onActionButtonClick(item);
+                          }
+                        }}
                         icon={<DeleteIcon />}
                         color="danger"
                         ariaLabel="Delete"
+                        hovermsg="장바구니에서 삭제"
                       />
                     )}
                     {actionType === "add" && (
@@ -63,6 +68,7 @@ const ListView: React.FC<ListViewProps> = ({ columns, items, actionType = "none"
                         icon={<AddIcon />}
                         color="primary"
                         ariaLabel="Add"
+                        hovermsg="장바구니 추가"
                       />
                     )}
                   </TableCell>

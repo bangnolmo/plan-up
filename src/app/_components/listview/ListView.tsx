@@ -12,7 +12,8 @@ import {
 } from "@nextui-org/react";
 import { DeleteIcon } from "../Icon/DeleteIcon";
 import { AddIcon } from "../Icon/AddIcon";
-import IconButton from "../IconButton/IconButton";
+import IconButton from "../buttons/IconButton";
+
 // import { getCookie, setCookie, updateCookie } from "@/app/_cookieManager/cookieManager";
 
 interface ListViewProps {
@@ -55,6 +56,7 @@ const ListView: React.FC<ListViewProps> = ({ columns, items, actionType = "none"
                         color="danger"
                         ariaLabel="Delete"
                         hovermsg="장바구니에서 삭제"
+                        size='md'
                       />
                     )}
                     {actionType === "add" && (
@@ -69,6 +71,7 @@ const ListView: React.FC<ListViewProps> = ({ columns, items, actionType = "none"
                         color="primary"
                         ariaLabel="Add"
                         hovermsg="장바구니 추가"
+                        size="md"
                       />
                     )}
                   </TableCell>

@@ -1,5 +1,5 @@
 // cookieHandlers.ts
-import { deleteCookieValueById, getCookie, setCookie, updateCookie } from "@/app/_cookieManager/cookieManager";
+import { deleteCookieValue, getCookie, setCookie, updateCookieValue } from "@/app/_cookieManager/cookieManager";
 
 export type LectureItem = Record<string, string | number>;
 
@@ -22,6 +22,7 @@ export const handleCartAddClick = (item: LectureItem) => {
         parsedData.push(extendedItem);
         setCookie("clickedItemData", parsedData, 7);
         console.log("쿠키가 생성되었습니다:", parsedData);
+        window.alert("장바구니에 과목이 추가되었습니다.");
     } else if (Array.isArray(existingData)) {
         // 쿠키 데이터가 배열 형식이면 parsedData로 할당
         parsedData = existingData.filter((el): el is LectureItem => {
@@ -41,10 +42,12 @@ export const handleCartAddClick = (item: LectureItem) => {
         if (!isItemExist) {
             // 데이터가 없으면 새로 추가
             parsedData.push(extendedItem);
-            updateCookie("clickedItemData", parsedData, 7);
+            updateCookieValue("clickedItemData", parsedData, 7);
             console.log("쿠키가 업데이트되었습니다:", parsedData);
+            window.alert("장바구니에 과목이 추가되었습니다.");
         } else {
             console.log("데이터가 이미 쿠키에 존재합니다:", item);
+            window.alert("이미 장바구니에 추가된 과목입니다.");
         }
     } else {
         console.error("쿠키 데이터가 예상하지 못한 형식입니다. 기본 빈 배열로 설정합니다.");
@@ -65,6 +68,12 @@ export function handleCartDeleteClick(item: LectureItem): void {
         alert("쿠키에 저장된 데이터가 없습니다.");
     } else {
         // 쿠키가 비어있지 않은 경우 삭제 수행
-        deleteCookieValueById("clickedItemData", item.id, 7);
+        deleteCookieValue("clickedItemData", item.id, 7);
+        alert("장바구니에서 과목이 삭제되었습니다.");
     }
 }
+
+export function handleFloatingCartClick() {
+    console.log("장바구니로 이동합니다.");
+    window.location.href = "/cart"; // 장바구니 페이지로 이동
+};

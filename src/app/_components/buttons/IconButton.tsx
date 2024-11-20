@@ -6,20 +6,21 @@ interface IconButtonProps {
   icon: React.ReactNode;
   color: 'primary' | 'secondary' | 'success' | 'warning' | 'danger';
   variant?: 'solid' | 'faded' | 'bordered' | 'light' | 'shadow';
+  size: 'sm' | 'md' | 'lg';
   ariaLabel: string;
   hovermsg: string;
   onPress: () => void;
 }
 
-const IconButton: React.FC<IconButtonProps> = ({ icon, color, variant = 'solid', ariaLabel, hovermsg, onPress }) => {
+const IconButton: React.FC<IconButtonProps> = ({ icon, color, variant = 'solid', size = 'md', ariaLabel, hovermsg, onPress }) => {
   return hovermsg ? (
     <Tooltip content={hovermsg}>
-      <Button isIconOnly color={color} variant={variant} aria-label={ariaLabel} onPress={onPress}>
+      <Button isIconOnly color={color} variant={variant} aria-label={ariaLabel} onPress={onPress} size={size}>
         {icon}
       </Button>
     </Tooltip>
   ) : (
-    <Button isIconOnly color={color} variant={variant} aria-label={ariaLabel} onPress={onPress}>
+    <Button isIconOnly color={color} variant={variant} aria-label={ariaLabel} onPress={onPress} size={size}>
       {icon}
     </Button>
   );

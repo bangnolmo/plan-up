@@ -65,7 +65,7 @@ export const removeCookie = (key: string): void => {
  * @param updatedValue 업데이트할 값
  * @param expiresDays 쿠키의 유효 기간(일 단위, 기본값: 7일)
  */
-export const updateCookie = (key: string, updatedValue: CookieValue, expiresDays: number = 7): void => {
+export const updateCookieValue = (key: string, updatedValue: CookieValue, expiresDays: number = 7): void => {
     try {
         const existingValue = getCookie(key);
 
@@ -92,7 +92,7 @@ export const updateCookie = (key: string, updatedValue: CookieValue, expiresDays
     }
 };
 
-export const deleteCookieValueById = (key: string, id: string | number, expiresDays: number = 7): void => {
+export const deleteCookieValue = (key: string, id: string | number, expiresDays: number = 7): void => {
     try {
         const existingData = getCookie(key);
         const parsedData = existingData as LectureItem[];
@@ -114,5 +114,35 @@ export const deleteCookieValueById = (key: string, id: string | number, expiresD
         }
     } catch (error) {
         console.error("쿠키에서 값을 삭제하는 중 오류가 발생했습니다:", error);
+    }
+};
+
+/**
+ * 쿠키 내 데이터 개수를 구하는 함수
+ * @param key 쿠키의 이름
+ * @returns 쿠키에 저장된 값의 개수 (배열, 객체, 문자열의 길이 등)
+ */
+export const getCookieItemCount = (key: string): number => {
+    const existingData = getCookie(key);
+
+    if (!existingData) {
+        return 0;
+    }
+
+    try {
+        if (Array.isArray(existingData)) {
+            // 데이터가 배열일 경우, 배열의 길이를 반환
+            return existingData.length;
+        } else if (typeof existingData === "object") {
+            // 데이터가 객체일 경우, 객체의 키 개수를 반환
+            return Object.keys(existingData).length;
+        } else if (typeof existingData === "string") {
+            // 데이터가 문자열일 경우, 문자열의 길이를 반환
+            return existingData.length;
+        }
+        return 0;
+    } catch (error) {
+        console.error("쿠키 데이터 개수를 구하는 중 오류가 발생했습니다:", error);
+        return 0;
     }
 };

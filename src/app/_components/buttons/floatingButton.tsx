@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import IconButton from './IconButton';
 import { Badge } from '@nextui-org/react';
+import { getLocalStorageItemCount } from '@/app/_managers/localStorageManager';
+import { addLocalStorageListener } from '@/app/_managers/eventListenerManager';
 
 interface FloatingButtonProps {
   color: 'primary' | 'secondary' | 'success' | 'warning' | 'danger';
@@ -8,7 +10,6 @@ interface FloatingButtonProps {
   ariaLabel: string;
   hovermsg: string;
   icon: React.ReactNode;
-  content: string | number;
   onPress: () => void;
 }
 
@@ -18,15 +19,31 @@ const FloatingButton: React.FC<FloatingButtonProps> = ({
   ariaLabel,
   hovermsg,
   icon,
-  content,
   onPress,
 }) => {
+  
+  const [data, setData] = useState<number>(0);
 
+    useEffect(() => {
+        // 초기 데이터 로드
+        const fetchData = () => {
+            const localStorageCount = getLocalStorageItemCount("clickedItemData");
+            setData(localStorageCount);
+        };
+
+        fetchData();
+
+        const unsubscribe = addLocalStorageListener<number>("clickedItemData", fetchData);
+
+        return () => {
+          unsubscribe();
+        };
+    }, []);
 
   
   return (
     <div className="fixed bottom-10 right-20 z-50">
-        <Badge content={content} shape='circle' color='danger'>
+        <Badge content={data} shape='circle' color='danger'>
             <IconButton
                 color={color}
                 variant={variant}

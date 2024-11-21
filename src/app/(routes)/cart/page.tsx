@@ -5,8 +5,8 @@ import ListView from "@/app/_components/listview/ListView";
 import Header from "@/app/_components/Header";
 import PageInfo from "@/app/_components/PageInfo";
 import { handleCartDeleteClick } from "@/app/_buttonHandlers/cartButtonHandler";
-import { getCookie } from "@/app/_cookieManager/cookieManager";
-
+import { getLocalStorage } from "@/app/_managers/localStorageManager";
+import { addLocalStorageListener } from "@/app/_managers/eventListenerManager";
 
 const columns = [
     { key: "lecture_name", label: "강의명" },
@@ -22,29 +22,53 @@ const columns = [
 ];
 
 const CartTable = () => {
-
     const [lectures, setLectures] = useState<Record<string, string | number>[]>([]);
 
     useEffect(() => {
-        // 쿠키에서 데이터를 가져옴
-        const savedLectures = getCookie('clickedItemData');
-        
-        if (Array.isArray(savedLectures)) {
-            // 쿠키 데이터가 배열 형식인 경우 상태로 설정
-            setLectures(savedLectures.filter((el): el is Record<string, string | number> => {
-                return typeof el === 'object' && el !== null && !Array.isArray(el) &&
-                    Object.values(el).every(value => typeof value === 'string' || typeof value === 'number');
-            }));
-        } else {
-            console.error("쿠키 데이터가 예상하지 못한 형식입니다.");
-        }
+        // 로컬 스토리지에서 데이터를 가져옴
+        const fetchData = () => {
+            const savedLectures = getLocalStorage("clickedItemData");
+
+            if (Array.isArray(savedLectures)) {
+                // 로컬 스토리지 데이터가 배열 형식인 경우 상태로 설정
+                setLectures(
+                    savedLectures.filter((el): el is Record<string, string | number> => {
+                        return (
+                            typeof el === "object" &&
+                            el !== null &&
+                            !Array.isArray(el) &&
+                            Object.values(el).every(
+                                (value) => typeof value === "string" || typeof value === "number"
+                            )
+                        );
+                    })
+                );
+            } else {
+                console.error("로컬 스토리지 데이터가 예상하지 못한 형식입니다.");
+            }
+        };
+
+        fetchData();
+
+        const unsubscribe = addLocalStorageListener<number>("clickedItemData", fetchData);
+
+        return () => {
+          unsubscribe();
+        };
+
+
     }, []);
-    
+
     return (
         <>
             <Header />
             <PageInfo title="장바구니" description="장바구니에 담긴 과목을 확인할 수 있어요" />
-            <ListView columns={columns} items={lectures} actionType="delete" onActionButtonClick={handleCartDeleteClick} />
+            <ListView
+                columns={columns}
+                items={lectures}
+                actionType="delete"
+                onActionButtonClick={handleCartDeleteClick}
+            />
         </>
     );
 };

@@ -3,7 +3,9 @@
 import Header from "@/app/_components/Header";
 import PageInfo from "@/app/_components/PageInfo";
 
-const Wizard = () => {
+
+const Wizard = () => { 
+
     return (
         <>
             <Header />

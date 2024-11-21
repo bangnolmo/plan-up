@@ -6,6 +6,10 @@ import { mockLectures } from "@/app/_mocks/mockLectureData";
 import Header from "@/app/_components/Header";
 import PageInfo from "@/app/_components/PageInfo";
 import SearchForm from "@/app/_components/searchform/SearchForm";
+import { handleCartAddClick, handleFloatingCartClick } from "@/app/_buttonHandlers/cartButtonHandler";
+import FloatingButton from "@/app/_components/buttons/floatingButton";
+import { AddIcon } from "@/app/_components/Icon/AddIcon";
+import { getCookieItemCount } from "@/app/_cookieManager/cookieManager";
 
 const columns = [
     { key: "lecture_name", label: "강의명" },
@@ -22,6 +26,8 @@ const columns = [
 
 const DynamicLectureTable = () => {
     const [lectures, setLectures] = useState(mockLectures);
+    const [cartItemCount, setCartItemCount] = useState(0);
+ 
 
     useEffect(() => {
         console.log(setLectures);
@@ -31,12 +37,38 @@ const DynamicLectureTable = () => {
         //   .then((data) => setLectures(data));
     }, []);
 
+    useEffect(() => {
+        // 컴포넌트가 처음 로드될 때 장바구니 아이템 개수 설정
+        const itemCount = getCookieItemCount("clickedItemData");
+        setCartItemCount(itemCount);
+    }, []);
+
+
+
+    // 장바구니 버튼 클릭 시 배지 상태를 업데이트하는 함수
+    const handlePress = () => {
+        handleFloatingCartClick()
+        // 쿠키가 변경된 이후 상태 업데이트
+        const updatedItemCount = getCookieItemCount("clickedItemData");
+        setCartItemCount(updatedItemCount);
+    };
+
+
     return (
         <>
             <Header />
             <PageInfo title="개설과목 조회" description="개설 과목을 조회할 수 있어요." />
             <SearchForm />
-            <ListView columns={columns} items={lectures} />
+            <ListView columns={columns} items={lectures} actionType="add" onActionButtonClick={handleCartAddClick} />
+            <FloatingButton
+                color="success"
+                ariaLabel=""
+                hovermsg=""
+                variant="faded"
+                icon={<AddIcon size={30}/>}
+                onPress={handlePress}
+                content={cartItemCount}
+            />
         </>
     );
 };

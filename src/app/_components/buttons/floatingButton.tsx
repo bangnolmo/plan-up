@@ -21,8 +21,11 @@ const FloatingButton: React.FC<FloatingButtonProps> = ({
   content,
   onPress,
 }) => {
+
+
+  
   return (
-    <div className="fixed bottom-5 right-5 z-50">
+    <div className="fixed bottom-10 right-20 z-50">
         <Badge content={content} shape='circle' color='danger'>
             <IconButton
                 color={color}

@@ -56,7 +56,7 @@ const ListView: React.FC<ListViewProps> = ({ columns, items, actionType = "none"
                         color="danger"
                         ariaLabel="Delete"
                         hovermsg="장바구니에서 삭제"
-                        size='md'
+                        size='sm'
                       />
                     )}
                     {actionType === "add" && (
@@ -71,7 +71,7 @@ const ListView: React.FC<ListViewProps> = ({ columns, items, actionType = "none"
                         color="primary"
                         ariaLabel="Add"
                         hovermsg="장바구니 추가"
-                        size="md"
+                        size="sm"
                       />
                     )}
                   </TableCell>

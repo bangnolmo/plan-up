@@ -27,6 +27,7 @@ const columns = [
 const DynamicLectureTable = () => {
     const [lectures, setLectures] = useState(mockLectures);
     const [cartItemCount, setCartItemCount] = useState(0);
+ 
 
     useEffect(() => {
         console.log(setLectures);
@@ -43,6 +44,16 @@ const DynamicLectureTable = () => {
     }, []);
 
 
+
+    // 장바구니 버튼 클릭 시 배지 상태를 업데이트하는 함수
+    const handlePress = () => {
+        handleFloatingCartClick()
+        // 쿠키가 변경된 이후 상태 업데이트
+        const updatedItemCount = getCookieItemCount("clickedItemData");
+        setCartItemCount(updatedItemCount);
+    };
+
+
     return (
         <>
             <Header />
@@ -50,11 +61,12 @@ const DynamicLectureTable = () => {
             <SearchForm />
             <ListView columns={columns} items={lectures} actionType="add" onActionButtonClick={handleCartAddClick} />
             <FloatingButton
-                color="primary"
+                color="success"
                 ariaLabel=""
                 hovermsg=""
-                icon={<AddIcon/>}
-                onPress={handleFloatingCartClick}
+                variant="faded"
+                icon={<AddIcon size={30}/>}
+                onPress={handlePress}
                 content={cartItemCount}
             />
         </>

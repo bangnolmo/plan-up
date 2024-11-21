@@ -44,7 +44,7 @@ const CartTable = () => {
         <>
             <Header />
             <PageInfo title="장바구니" description="장바구니에 담긴 과목을 확인할 수 있어요" />
-            <ListView columns={columns} items={lectures} actionType="add" onActionButtonClick={handleCartDeleteClick} />
+            <ListView columns={columns} items={lectures} actionType="delete" onActionButtonClick={handleCartDeleteClick} />
         </>
     );
 };

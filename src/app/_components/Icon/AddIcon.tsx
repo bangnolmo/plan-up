@@ -1,13 +1,15 @@
 import React from 'react';
 
-type AddIconProps = React.SVGProps<SVGSVGElement>;
+interface AddIconProps extends React.SVGProps<SVGSVGElement>{
+    size?: number;
+}
 
-export const AddIcon: React.FC<AddIconProps> = (props) => (
+export const AddIcon: React.FC<AddIconProps> = ({ size, height, width, ...props }) => (
     <svg
         version="1.0"
         xmlns="http://www.w3.org/2000/svg"
-        width="1em"
-        height="1em"
+        height={size || height || 20}
+        width={size || width || 20}
         viewBox="0 0 512.000000 512.000000"
         preserveAspectRatio="xMidYMid meet"
         {...props}

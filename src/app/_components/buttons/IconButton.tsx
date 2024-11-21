@@ -15,12 +15,12 @@ interface IconButtonProps {
 const IconButton: React.FC<IconButtonProps> = ({ icon, color, variant = 'solid', size = 'md', ariaLabel, hovermsg, onPress }) => {
   return hovermsg ? (
     <Tooltip content={hovermsg}>
-      <Button isIconOnly color={color} variant={variant} aria-label={ariaLabel} onPress={onPress} size={size}>
+      <Button isIconOnly={true} color={color} variant={variant} aria-label={ariaLabel} onPress={onPress} size={size}>
         {icon}
       </Button>
     </Tooltip>
   ) : (
-    <Button isIconOnly color={color} variant={variant} aria-label={ariaLabel} onPress={onPress} size={size}>
+    <Button isIconOnly={true} color={color} variant={variant} aria-label={ariaLabel} onPress={onPress} size={size}>
       {icon}
     </Button>
   );

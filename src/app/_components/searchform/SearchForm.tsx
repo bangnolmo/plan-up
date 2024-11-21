@@ -75,9 +75,10 @@ export default function SearchForm({ onYearChange, onSemesterChange, onCategoryC
                 </Tab>
             </Tabs>
 
-            {/* Search Button */}
             <div className="mt-4 flex justify-center">
-                <Button onClick={handleSearchClick}>조회</Button>
+                <Button onClick={handleSearchClick} color="primary">
+                    조회
+                </Button>
             </div>
         </div>
     );

@@ -17,7 +17,7 @@ export default function App() {
             <NavbarBrand>
                 <Link href="/" className="">
                     <Logo />
-                    <p className="font-bold text-gray-900">PlanUp</p>
+                    <p className="font-bold text-black">PlanUp</p>
                 </Link>
             </NavbarBrand>
 

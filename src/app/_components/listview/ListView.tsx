@@ -1,23 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-// ListView.tsx
 import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from "@nextui-org/react";
-import { DeleteIcon } from "../Icon/DeleteIcon";
-import { AddIcon } from "../Icon/AddIcon";
-import IconButton from "../buttons/IconButton";
-
-// import { getCookie, setCookie, updateCookie } from "@/app/_cookieManager/cookieManager";
+import { Delete, CopyPlus } from "lucide-react";
+import IconButton from "../IconButton";
 
 interface ListViewProps {
     columns: { key: string; label: string }[];
     items: any[];
     actionType?: "none" | "delete" | "add";
-    onActionButtonClick?: (item: Record<string, string | number>) => void; // 추가된 prop
+    onActionButtonClick?: (item: Record<string, string | number>) => void;
 }
 
 const ListView: React.FC<ListViewProps> = ({ columns, items, actionType = "none", onActionButtonClick }) => {
-    // "액션" 열을 조건부로 추가
     const dynamicColumns = actionType !== "none" ? [...columns, { key: "action", label: "Action" }] : columns;
 
     return (
@@ -38,7 +33,7 @@ const ListView: React.FC<ListViewProps> = ({ columns, items, actionType = "none"
                                                         onActionButtonClick(item);
                                                     }
                                                 }}
-                                                icon={<DeleteIcon />}
+                                                icon={<Delete size="16" strokeWidth={2.75} />}
                                                 color="danger"
                                                 ariaLabel="Delete"
                                                 hovermsg="장바구니에서 삭제"
@@ -53,7 +48,7 @@ const ListView: React.FC<ListViewProps> = ({ columns, items, actionType = "none"
                                                         onActionButtonClick(item);
                                                     }
                                                 }}
-                                                icon={<AddIcon />}
+                                                icon={<CopyPlus size="16" strokeWidth={2.75} />}
                                                 color="primary"
                                                 ariaLabel="Add"
                                                 hovermsg="장바구니 추가"

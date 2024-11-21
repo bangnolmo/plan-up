@@ -54,11 +54,8 @@ const DynamicLectureTable = () => {
             />
             <ListView columns={columns} items={lectures} actionType="add" onActionButtonClick={handleCartAddClick} />
             <FloatingButton
-                color="success"
-                ariaLabel=""
-                hovermsg=""
-                variant="faded"
-                icon={<ShoppingBasket size={30} />}
+                color="danger"
+                icon={<ShoppingBasket size={30} className="m-2 lg:m-6 text-primary" />}
                 onPress={handleFloatingCartClick}
             />
         </>

@@ -1,49 +1,63 @@
 "use client";
 
 import React, { useState } from "react";
-import { Card, CardBody, Tabs, Tab } from "@nextui-org/react";
+import { Card, CardBody, Tabs, Tab, Button } from "@nextui-org/react";
 import SelectYear from "./SelectYear";
 import SelectSemester from "./SelectSemester";
 import SelectMajor from "./SelectMajor";
 import SelectGeneral from "./SelectGeneral";
 
-export default function SearchForm() {
+interface SearchFormProps {
+    onYearChange: (year: string) => void;
+    onSemesterChange: (semester: string) => void;
+    onCategoryChange: (category: string) => void;
+    onDetailChange: (detail: string) => void;
+}
+
+export default function SearchForm({ onYearChange, onSemesterChange, onCategoryChange, onDetailChange }: SearchFormProps) {
     const currentYear = new Date().getFullYear();
     const [selectedYear, setSelectedYear] = useState(currentYear.toString());
     const [selectedSemester, setSelectedSemester] = useState("10");
-    const [selectedMajor, setSelectedMajor] = useState<string>("");
-    const [selectedGeneral, setSelectedGeneral] = useState<string>("");
+    const [category, setCategory] = useState<string>("general");
+    const [detail, setDetail] = useState<string>("");
 
-    const handleYearSelectionChange = (newSelectedYear: React.SetStateAction<string>) => {
+    const handleYearSelectionChange = (newSelectedYear: string) => {
         setSelectedYear(newSelectedYear);
-        console.log("Selected Year:", newSelectedYear); // 출력
+        onYearChange(newSelectedYear);
     };
 
-    const handleSemesterSelectionChange = (newSelectedSemester: React.SetStateAction<string>) => {
+    const handleSemesterSelectionChange = (newSelectedSemester: string) => {
         setSelectedSemester(newSelectedSemester);
-        console.log("Selected Semester:", newSelectedSemester); // 출력
+        onSemesterChange(newSelectedSemester);
     };
 
-    const handleMajorSelectionChange = (newSelectedMajor: string) => {
-        setSelectedMajor(newSelectedMajor);
-        console.log("Selected Major:", newSelectedMajor); // 출력
+    const handleCategoryChange = (newCategory: string) => {
+        setCategory(newCategory);
+        onCategoryChange(newCategory);
     };
 
-    const handleGeneralSelectionChange = (newSelectedGeneral: string) => {
-        setSelectedGeneral(newSelectedGeneral);
-        console.log("Selected Major:", newSelectedGeneral); // 출력
+    const handleDetailChange = (newDetail: string) => {
+        setDetail(newDetail);
+        onDetailChange(newDetail);
+    };
+
+    const handleSearchClick = () => {
+        console.log("Selected Year:", selectedYear);
+        console.log("Selected Semester:", selectedSemester);
+        console.log("Category:", category);
+        console.log("Detail:", detail);
     };
 
     return (
         <div className="m-2 p-2 sm:m-2 sm:p-4">
-            <Tabs aria-label="교양 / 전공 선택">
+            <Tabs aria-label="교양 / 전공 선택" selectedKey={category} onSelectionChange={(key) => handleCategoryChange(key.toString())}>
                 <Tab key="general" title="교양">
                     <Card>
                         <CardBody>
                             <div className="flex flex-col sm:flex-row gap-4 items-center">
                                 <SelectYear selectedYear={selectedYear} onSelectionChange={handleYearSelectionChange} />
                                 <SelectSemester selectedSemester={selectedSemester} onSelectionChange={handleSemesterSelectionChange} />
-                                <SelectGeneral selectedGeneral={selectedGeneral} onSelectionChange={handleGeneralSelectionChange} />
+                                <SelectGeneral selectedGeneral={detail} onSelectionChange={handleDetailChange} />
                             </div>
                         </CardBody>
                     </Card>
@@ -54,12 +68,17 @@ export default function SearchForm() {
                             <div className="flex flex-col sm:flex-row gap-4 items-center">
                                 <SelectYear selectedYear={selectedYear} onSelectionChange={handleYearSelectionChange} />
                                 <SelectSemester selectedSemester={selectedSemester} onSelectionChange={handleSemesterSelectionChange} />
-                                <SelectMajor selectedMajor={selectedMajor} onSelectionChange={handleMajorSelectionChange} />
+                                <SelectMajor selectedMajor={detail} onSelectionChange={handleDetailChange} />
                             </div>
                         </CardBody>
                     </Card>
                 </Tab>
             </Tabs>
+
+            {/* Search Button */}
+            <div className="mt-4 flex justify-center">
+                <Button onClick={handleSearchClick}>조회</Button>
+            </div>
         </div>
     );
 }

@@ -40,7 +40,7 @@ export const handleCartAddClick = (item: LectureItem) => {
 
         // 동일한 데이터가 있는지 확인
         const isItemExist = parsedData.some((data) => {
-            return typeof data === "object" && data.id === item.id;
+            return typeof data === "object" && data.sub_num === item.sub_num;
         });
 
         if (!isItemExist) {

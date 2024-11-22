@@ -30,7 +30,7 @@ const FloatingButton: React.FC<FloatingButtonProps> = ({ color, icon, onPress })
 
     return (
         <div className="fixed bottom-4 right-4 lg:bottom-16 lg:right-20 z-50">
-            <Badge size="lg" content={data} shape="circle" color={color}>
+            <Badge size="lg" content={data} shape="circle" color={color} isInvisible={data === 0}>
                 <Card shadow="lg" radius="lg" isPressable onPress={onPress} isHoverable>
                     {icon}
                 </Card>

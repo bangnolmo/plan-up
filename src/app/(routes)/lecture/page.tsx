@@ -7,7 +7,7 @@ import Header from "@/app/_components/Header";
 import PageInfo from "@/app/_components/PageInfo";
 import SearchForm from "@/app/_components/searchform/SearchForm";
 import { handleCartAddClick, handleFloatingCartClick } from "@/app/_buttonHandlers/cartButtonHandler";
-import FloatingButton from "@/app/_components/buttons/floatingButton";
+import FloatingButton from "@/app/_components/FloatingButton";
 import { ShoppingBasket } from "lucide-react";
 import { columns } from "@/app/_configs/lectureColumns";
 
@@ -55,7 +55,7 @@ const DynamicLectureTable = () => {
             <ListView columns={columns} items={lectures} actionType="add" onActionButtonClick={handleCartAddClick} />
             <FloatingButton
                 color="danger"
-                icon={<ShoppingBasket size={30} className="m-2 lg:m-6 text-primary" />}
+                icon={<ShoppingBasket size={30} className="m-2 lg:m-4 text-primary" />}
                 onPress={handleFloatingCartClick}
             />
         </>

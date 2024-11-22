@@ -3,8 +3,8 @@
 // 로컬 스토리지에 저장되는 데이터 타입 정의
 export type LocalStorageValue = string | number | Record<string, unknown> | Array<unknown>;
 export type LectureItem = {
-    id: string;
-    [key: string]: string | number; // ID 외에도 다양한 필드를 가질 수 있는 타입
+    sub_num: string;
+    [key: string]: string | number; // sub_num 외에도 다양한 필드를 가질 수 있는 타입
 };
 
 /**
@@ -95,24 +95,24 @@ export const updateLocalStorageValue = (key: string, updatedValue: LocalStorageV
 /**
  * 로컬 스토리지에서 특정 항목 삭제 함수
  * @param key 로컬 스토리지의 이름
- * @param id 삭제할 항목의 ID
+ * @param sub_num 삭제할 항목의 sub_num
  */
-export const deleteLocalStorageValue = (key: string, id: string | number): void => {
+export const deleteLocalStorageValue = (key: string, sub_num: string | number): void => {
     try {
         const existingData = getLocalStorage(key);
         const parsedData = existingData as LectureItem[];
 
         // 기존 데이터가 배열일 때만 삭제 작업 수행
         if (existingData && Array.isArray(existingData)) {
-            // 삭제할 ID와 일치하지 않는 요소만 유지하여 새로운 배열 생성
-            const updatedData = parsedData.filter((item: LectureItem) => item.id !== id);
+            // 삭제할 sub_num와 일치하지 않는 요소만 유지하여 새로운 배열 생성
+            const updatedData = parsedData.filter((item: LectureItem) => item.sub_num !== sub_num);
 
             if (updatedData.length !== existingData.length) {
                 // 기존 배열과 길이가 다르면 업데이트 (즉, 삭제가 이루어진 경우)
                 setLocalStorage(key, updatedData);
-                console.log(`로컬 스토리지 "${key}"에서 ID가 "${id}"인 항목이 성공적으로 삭제되었습니다.`);
+                console.log(`로컬 스토리지 "${key}"에서 sub_num가 "${sub_num}"인 항목이 성공적으로 삭제되었습니다.`);
             } else {
-                console.log(`로컬 스토리지 "${key}"에 ID가 "${id}"인 항목이 존재하지 않습니다.`);
+                console.log(`로컬 스토리지 "${key}"에 sub_num가 "${sub_num}"인 항목이 존재하지 않습니다.`);
             }
         } else {
             console.error("로컬 스토리지 데이터가 배열 형식이 아니거나 존재하지 않습니다. 삭제가 수행되지 않았습니다.");

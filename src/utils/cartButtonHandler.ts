@@ -13,7 +13,7 @@ export type LectureItem = Record<string, string | number>;
  */
 export const handleCartAddClick = (item: LectureItem) => {
     // 기존 로컬 스토리지에 저장된 데이터를 가져옴
-    const existingData = getLocalStorage("clickedItemData");
+    const existingData = getLocalStorage("cartItem");
     let parsedData: LectureItem[] = [];
 
     const extendedItem = {
@@ -24,7 +24,7 @@ export const handleCartAddClick = (item: LectureItem) => {
     if (!existingData) {
         // 로컬 스토리지가 비어있는 경우 새로 생성
         parsedData.push(extendedItem);
-        setLocalStorage("clickedItemData", parsedData);
+        setLocalStorage("cartItem", parsedData);
         console.log("로컬 스토리지가 생성되었습니다:", parsedData);
         window.alert("장바구니에 과목이 추가되었습니다.");
     } else if (Array.isArray(existingData)) {
@@ -40,13 +40,21 @@ export const handleCartAddClick = (item: LectureItem) => {
 
         // 동일한 데이터가 있는지 확인
         const isItemExist = parsedData.some((data) => {
+            console.log(data.period);
             return typeof data === "object" && data.sub_num === item.sub_num;
         });
 
-        if (!isItemExist) {
+        const isElearning = () => {
+            return item.period === "이러닝"
+        }
+
+        if (isElearning()) {
+            console.log("이러닝 과목 감지");
+            window.alert("이러닝 강좌는 장바구니에 추가할 수 없습니다.");
+        } else if (!isItemExist) {
             // 데이터가 없으면 새로 추가
             parsedData.push(extendedItem);
-            updateLocalStorageValue("clickedItemData", parsedData);
+            updateLocalStorageValue("cartItem", parsedData);
             console.log("로컬 스토리지가 업데이트되었습니다:", parsedData);
             window.alert("장바구니에 과목이 추가되었습니다.");
         } else {
@@ -64,14 +72,14 @@ export const handleCartAddClick = (item: LectureItem) => {
  */
 export function handleCartDeleteClick(item: LectureItem): void {
     // 기존 로컬 스토리지에서 데이터를 가져옴
-    const existingData = getLocalStorage("clickedItemData");
+    const existingData = getLocalStorage("cartItem");
 
     if (!existingData || (Array.isArray(existingData) && existingData.length === 0)) {
         // 로컬 스토리지가 없거나 데이터가 빈 배열인 경우 알림
         alert("로컬 스토리지에 저장된 데이터가 없습니다.");
     } else {
         // 로컬 스토리지가 비어있지 않은 경우 삭제 수행
-        deleteLocalStorageValue("clickedItemData", item.sub_num);
+        deleteLocalStorageValue("cartItem", item.sub_num);
         alert("장바구니에서 과목이 삭제되었습니다.");
     }
 }

@@ -58,17 +58,12 @@ const TableView: React.FC = () => {
     return (
         <div className="container mx-auto p-4">
             <div className="overflow-x-auto">
-                <div
-                    className="grid grid-cols-6 gap-0 p-px border-1 rounded-xl border-gray-200 dark:border-gray-600"
-                    style={{
-                        gridTemplateColumns: "1fr 3fr 3fr 3fr 3fr 3fr",
-                    }}
-                >
+                <div className="grid grid-cols-[1fr_repeat(5,_3fr)] sm:grid-rows-[1fr_repeat(8,_2fr)] gap-0 p-px border-1 rounded-xl border-gray-200 dark:border-gray-600">
                     <div className="p-2"></div> {/* 코너 셀 */}
                     {days.map((day) => (
                         <div
                             key={day}
-                            className="p-2 text-center text-gray-600 dark:text-gray-200 font-normal border-l border-gray-200 dark:border-gray-600"
+                            className="p-1 text-sm text-center text-gray-600 dark:text-gray-200 font-normal border-l border-gray-200 dark:border-gray-600"
                         >
                             {day}
                         </div>
@@ -87,13 +82,10 @@ const TableView: React.FC = () => {
                                 return isLectureStart ? (
                                     <div
                                         key={`${day}-${period}`}
-                                        className={`p-2 text-center border-t border-l border-gray-200 dark:border-gray-600`}
+                                        className={`flex items-center text-center justify-center p-2 border-t border-l border-gray-200 dark:border-gray-600`}
                                         style={{
                                             backgroundColor: `${lectureColor}`,
                                             gridRow: `span ${lectureLength}`,
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "center",
                                         }}
                                     >
                                         {lecture && (

@@ -13,7 +13,7 @@ export default function SelectGeneral({ selectedGeneral, onSelectionChange }: Se
             placeholder="구분을 입력하세요"
             variant="bordered"
             value={selectedGeneral}
-            onChange={(e) => onSelectionChange(e.target.value)}
+            onSelectionChange={(value) => onSelectionChange(value as string)}
             className="max-w-xs"
         >
             {mockGeneral.map((general) => (

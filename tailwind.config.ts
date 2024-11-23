@@ -13,7 +13,18 @@ export default {
     extend: {
       colors: {
         primary: '#30A46C',
-        secondary: '#0090FF',
+        secondary: '#218358',
+        lecture: {
+          red: '#f87171',
+          orange: '#fb923c',
+          yellow: '#fbbf24',
+          green: '#34d399',
+          teal: '#2dd4bf',
+          blue: '#3b82f6',
+          indigo: '#6366f1',
+          purple: '#8b5cf6',
+          pink: '#ec4899',
+        },
       },
     },
   },

@@ -3,7 +3,7 @@ import {
     getLocalStorage,
     setLocalStorage,
     updateLocalStorageValue,
-} from "@/app/_managers/localStorageManager";
+} from "@/utils/localStorageManager";
 
 export type LectureItem = Record<string, string | number>;
 
@@ -40,7 +40,7 @@ export const handleCartAddClick = (item: LectureItem) => {
 
         // 동일한 데이터가 있는지 확인
         const isItemExist = parsedData.some((data) => {
-            return typeof data === "object" && data.id === item.id;
+            return typeof data === "object" && data.sub_num === item.sub_num;
         });
 
         if (!isItemExist) {
@@ -71,7 +71,7 @@ export function handleCartDeleteClick(item: LectureItem): void {
         alert("로컬 스토리지에 저장된 데이터가 없습니다.");
     } else {
         // 로컬 스토리지가 비어있지 않은 경우 삭제 수행
-        deleteLocalStorageValue("clickedItemData", item.id);
+        deleteLocalStorageValue("clickedItemData", item.sub_num);
         alert("장바구니에서 과목이 삭제되었습니다.");
     }
 }

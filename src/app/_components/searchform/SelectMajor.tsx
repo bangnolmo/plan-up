@@ -15,7 +15,7 @@ export default function SelectMajor({ selectedMajor, onSelectionChange }: Select
             variant="bordered"
             placeholder="전공을 입력하세요"
             value={selectedMajor}
-            onChange={(e) => onSelectionChange(e.target.value)}
+            onSelectionChange={(value) => onSelectionChange(value as string)}
             className="max-w-xs"
             scrollShadowProps={{
                 isEnabled: false,

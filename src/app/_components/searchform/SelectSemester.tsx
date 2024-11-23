@@ -9,12 +9,9 @@ interface SelectSemesterProps {
 }
 
 export default function SelectSemester({ selectedSemester, onSelectionChange }: SelectSemesterProps) {
-    // 학기와 그에 대응하는 값들
     const semesters = [
         { label: "1학기", value: "10" },
-        { label: "여름학기", value: "15" },
         { label: "2학기", value: "20" },
-        { label: "겨울학기", value: "25" },
     ];
 
     return (

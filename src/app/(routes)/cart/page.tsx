@@ -3,9 +3,9 @@ import { useState, useEffect } from "react";
 import ListView from "@/app/_components/listview/ListView";
 import Header from "@/app/_components/Header";
 import PageInfo from "@/app/_components/PageInfo";
-import { handleCartDeleteClick } from "@/app/_buttonHandlers/cartButtonHandler";
-import { getLocalStorage } from "@/app/_managers/localStorageManager";
-import { addLocalStorageListener } from "@/app/_managers/eventListenerManager";
+import { handleCartDeleteClick } from "@/utils/cartButtonHandler";
+import { getLocalStorage } from "@/utils/localStorageManager";
+import { addLocalStorageListener } from "@/utils/eventListenerManager";
 import { columns } from "@/app/_configs/lectureColumns";
 
 const CartTable = () => {

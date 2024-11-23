@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { getLocalStorage } from "@/app/_managers/localStorageManager";
+import { getLocalStorage } from "@/utils/localStorageManager";
+import { getClassroomInfo } from "@/utils/locationShortener";
+import { colors } from "@/app/_configs/lectureColumns";
 
 interface Lecture {
     sub_num: string;
@@ -19,6 +21,7 @@ interface ParsedLecture {
     startPeriod: number;
     endPeriod: number;
     name: string;
+    location: string;
 }
 
 const TableView: React.FC = () => {
@@ -40,6 +43,7 @@ const TableView: React.FC = () => {
                         startPeriod: periods[0],
                         endPeriod: periods[periods.length - 1],
                         name: lecture.name,
+                        location: lecture.location,
                     },
                 ];
             });
@@ -55,42 +59,49 @@ const TableView: React.FC = () => {
         <div className="container mx-auto p-4">
             <div className="overflow-x-auto">
                 <div
-                    className="grid grid-cols-6 gap-0 p-px border-1 rounded-xl border-gray-200 dark:border-gray-600" // Set gap-0 here to remove grid item spacing
+                    className="grid grid-cols-6 gap-0 p-px border-1 rounded-xl border-gray-200 dark:border-gray-600"
                     style={{
-                        gridTemplateColumns: "1fr 3fr 3fr 3fr 3fr 3fr", // First column is fixed width, others are evenly distributed
+                        gridTemplateColumns: "1fr 3fr 3fr 3fr 3fr 3fr",
                     }}
                 >
-                    <div className="p-2"></div> {/* Corner cell */}
+                    <div className="p-2"></div> {/* 코너 셀 */}
                     {days.map((day) => (
                         <div
                             key={day}
-                            className="p-2 text-center text-gray-500 dark:text-gray-200 font-normal border-l border-gray-200 dark:border-gray-600"
+                            className="p-2 text-center text-gray-600 dark:text-gray-200 font-normal border-l border-gray-200 dark:border-gray-600"
                         >
                             {day}
-                        </div> // Adding border
+                        </div>
                     ))}
                     {periods.map((period) => (
                         <React.Fragment key={period}>
-                            <div className="p-2 text-center text-gray-500 dark:text-gray-200 font-normal border-t border-gray-200 dark:border-gray-600">
+                            <div className="p-2 text-center text-gray-600 dark:text-gray-200 font-normal border-t border-gray-200 dark:border-gray-600">
                                 {period}
                             </div>
-                            {days.map((day) => {
+                            {days.map((day, index) => {
                                 const lecture = getLectureForCell(day, period);
                                 const isLectureStart = lecture && lecture.startPeriod === period;
                                 const lectureLength = lecture ? lecture.endPeriod - lecture.startPeriod + 1 : 1;
+                                const lectureColor = lecture ? colors[(index + 4) % colors.length] : "";
 
                                 return isLectureStart ? (
                                     <div
                                         key={`${day}-${period}`}
-                                        className={`p-2 ${lecture ? "bg-blue-100 dark:bg-blue-900" : ""} text-center border-t border-l border-gray-200 dark:border-gray-600`}
+                                        className={`p-2 text-center border-t border-l border-gray-200 dark:border-gray-600`}
                                         style={{
+                                            backgroundColor: `${lectureColor}`,
                                             gridRow: `span ${lectureLength}`,
                                             display: "flex",
                                             alignItems: "center",
                                             justifyContent: "center",
                                         }}
                                     >
-                                        {lecture && <div className="text-sm">{lecture.name}</div>}
+                                        {lecture && (
+                                            <div>
+                                                <div className="text-sm sm:text-md text-white font-semibold">{lecture.name}</div>
+                                                <div className="text-xs sm:text-sm text-white/80 mt-1">{getClassroomInfo(lecture.location)}</div>
+                                            </div>
+                                        )}
                                     </div>
                                 ) : lecture ? null : (
                                     <div key={`${day}-${period}`} className="p-2 border-t border-l border-gray-200 dark:border-gray-600"></div>

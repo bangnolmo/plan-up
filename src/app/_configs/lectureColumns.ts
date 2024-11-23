@@ -9,3 +9,19 @@ export const columns = [
     { key: "period", label: "교시" },
     { key: "location", label: "강의실" },
 ];
+
+export const colors = [
+    "#dc2626",
+    "#ea580c",
+    "#d97706",
+    "#65a30d",
+    "#16a34a",
+    "#059669",
+    "#0891b2",
+    "#0284c7",
+    "#2563eb",
+    "#4f46e5",
+    "#9333ea",
+    "#c026d3",
+    "#db2777",
+];

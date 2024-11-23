@@ -6,7 +6,7 @@ import { mockLectures } from "@/app/_mocks/mockLectureData";
 import Header from "@/app/_components/Header";
 import PageInfo from "@/app/_components/PageInfo";
 import SearchForm from "@/app/_components/searchform/SearchForm";
-import { handleCartAddClick, handleFloatingCartClick } from "@/app/_buttonHandlers/cartButtonHandler";
+import { handleCartAddClick, handleFloatingCartClick } from "@/utils/cartButtonHandler";
 import FloatingButton from "@/app/_components/FloatingButton";
 import { ShoppingBasket } from "lucide-react";
 import { columns } from "@/app/_configs/lectureColumns";

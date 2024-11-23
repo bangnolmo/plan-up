@@ -1,30 +1,34 @@
-// cookieHandlers.ts
-import { deleteCookieValue, getCookie, setCookie, updateCookieValue } from "@/app/_cookieManager/cookieManager";
+import {
+    deleteLocalStorageValue,
+    getLocalStorage,
+    setLocalStorage,
+    updateLocalStorageValue,
+} from "@/app/_managers/localStorageManager";
 
 export type LectureItem = Record<string, string | number>;
 
 /**
- * 쿠키에 아이템을 추가하는 핸들러 함수
+ * 로컬 스토리지에 아이템을 추가하는 핸들러 함수
  * @param item 추가할 아이템
  */
 export const handleCartAddClick = (item: LectureItem) => {
-    // 기존 쿠키에 저장된 데이터를 가져옴
-    const existingData = getCookie("clickedItemData");
+    // 기존 로컬 스토리지에 저장된 데이터를 가져옴
+    const existingData = getLocalStorage("clickedItemData");
     let parsedData: LectureItem[] = [];
 
     const extendedItem = {
         ...item,
-        groupAttribute: 0 // Group 속성추가 (임시)
+        groupAttribute: 0, // Group 속성추가 (임시)
     };
 
     if (!existingData) {
-        // 쿠키가 없는 경우 새로 생성
+        // 로컬 스토리지가 비어있는 경우 새로 생성
         parsedData.push(extendedItem);
-        setCookie("clickedItemData", parsedData, 7);
-        console.log("쿠키가 생성되었습니다:", parsedData);
+        setLocalStorage("clickedItemData", parsedData);
+        console.log("로컬 스토리지가 생성되었습니다:", parsedData);
         window.alert("장바구니에 과목이 추가되었습니다.");
     } else if (Array.isArray(existingData)) {
-        // 쿠키 데이터가 배열 형식이면 parsedData로 할당
+        // 로컬 스토리지 데이터가 배열 형식이면 parsedData로 할당
         parsedData = existingData.filter((el): el is LectureItem => {
             return (
                 typeof el === "object" &&
@@ -42,38 +46,40 @@ export const handleCartAddClick = (item: LectureItem) => {
         if (!isItemExist) {
             // 데이터가 없으면 새로 추가
             parsedData.push(extendedItem);
-            updateCookieValue("clickedItemData", parsedData, 7);
-            console.log("쿠키가 업데이트되었습니다:", parsedData);
+            updateLocalStorageValue("clickedItemData", parsedData);
+            console.log("로컬 스토리지가 업데이트되었습니다:", parsedData);
             window.alert("장바구니에 과목이 추가되었습니다.");
         } else {
-            console.log("데이터가 이미 쿠키에 존재합니다:", item);
+            console.log("데이터가 이미 로컬 스토리지에 존재합니다:", item);
             window.alert("이미 장바구니에 추가된 과목입니다.");
         }
     } else {
-        console.error("쿠키 데이터가 예상하지 못한 형식입니다. 기본 빈 배열로 설정합니다.");
+        console.error("로컬 스토리지 데이터가 예상하지 못한 형식입니다. 기본 빈 배열로 설정합니다.");
     }
 };
 
-
 /**
- * 카트에서 항목을 삭제하는 핸들러 함수
- * @param item
+ * 장바구니에서 항목을 삭제하는 핸들러 함수
+ * @param item 삭제할 아이템
  */
 export function handleCartDeleteClick(item: LectureItem): void {
-    // 기존 쿠키에서 데이터를 가져옴
-    const existingData = getCookie("clickedItemData");
+    // 기존 로컬 스토리지에서 데이터를 가져옴
+    const existingData = getLocalStorage("clickedItemData");
 
     if (!existingData || (Array.isArray(existingData) && existingData.length === 0)) {
-        // 쿠키가 없거나, 쿠키 데이터가 빈 배열일 경우 알림
-        alert("쿠키에 저장된 데이터가 없습니다.");
+        // 로컬 스토리지가 없거나 데이터가 빈 배열인 경우 알림
+        alert("로컬 스토리지에 저장된 데이터가 없습니다.");
     } else {
-        // 쿠키가 비어있지 않은 경우 삭제 수행
-        deleteCookieValue("clickedItemData", item.id, 7);
+        // 로컬 스토리지가 비어있지 않은 경우 삭제 수행
+        deleteLocalStorageValue("clickedItemData", item.id);
         alert("장바구니에서 과목이 삭제되었습니다.");
     }
 }
 
+/**
+ * 플로팅 카트를 클릭할 때 동작하는 핸들러 함수
+ */
 export function handleFloatingCartClick() {
     console.log("장바구니로 이동합니다.");
     window.location.href = "/cart"; // 장바구니 페이지로 이동
-};
+}

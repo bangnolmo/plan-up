@@ -10,7 +10,7 @@ interface SelectYearProps {
 
 export default function SelectYear({ selectedYear, onSelectionChange }: SelectYearProps) {
     const currentYear = new Date().getFullYear();
-    const years = Array.from({ length: currentYear - 2019 + 1 }, (_, i) => 2019 + i);
+    const years = Array.from({ length: currentYear - 2024 + 1 }, (_, i) => 2024 + i);
 
     return (
         <Select

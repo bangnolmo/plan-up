@@ -3,7 +3,7 @@ import {
     getLocalStorage,
     setLocalStorage,
     updateLocalStorageValue,
-} from "@/app/_managers/localStorageManager";
+} from "@/utils/localStorageManager";
 
 export type LectureItem = Record<string, string | number>;
 

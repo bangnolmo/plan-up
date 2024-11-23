@@ -15,13 +15,13 @@ const FloatingButton: React.FC<FloatingButtonProps> = ({ color, icon, onPress })
     useEffect(() => {
         // 초기 데이터 로드
         const fetchData = () => {
-            const localStorageCount = getLocalStorageItemCount("clickedItemData");
+            const localStorageCount = getLocalStorageItemCount("cartItem");
             setData(localStorageCount);
         };
 
         fetchData();
 
-        const unsubscribe = addLocalStorageListener<number>("clickedItemData", fetchData);
+        const unsubscribe = addLocalStorageListener<number>("cartItem", fetchData);
 
         return () => {
             unsubscribe();

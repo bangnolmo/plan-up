@@ -30,7 +30,7 @@ const TableView: React.FC = () => {
     const periods = Array.from({ length: 8 }, (_, i) => i + 1);
 
     useEffect(() => {
-        const rawData = getLocalStorage("clickedItemData") as Lecture[] | null;
+        const rawData = getLocalStorage("cartItem") as Lecture[] | null;
         if (rawData) {
             const parsedLectures = rawData.flatMap((lecture) => {
                 const periodParts = lecture.period.split(" ");

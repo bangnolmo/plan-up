@@ -13,7 +13,7 @@ const CartTable = () => {
 
     useEffect(() => {
         const fetchData = () => {
-            const savedLectures = getLocalStorage("clickedItemData");
+            const savedLectures = getLocalStorage("cartItem");
             if (Array.isArray(savedLectures)) {
                 setLectures(
                     savedLectures.filter((el): el is Record<string, string | number> => {
@@ -32,7 +32,7 @@ const CartTable = () => {
 
         fetchData();
 
-        const unsubscribe = addLocalStorageListener<number>("clickedItemData", fetchData);
+        const unsubscribe = addLocalStorageListener<number>("cartItem", fetchData);
 
         return () => {
             unsubscribe();

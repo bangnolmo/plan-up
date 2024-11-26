@@ -1,3 +1,4 @@
+import { LectureItem } from "@/app/_configs/cartInfo";
 import {
     deleteLocalStorageValue,
     getLocalStorage,
@@ -5,7 +6,6 @@ import {
     updateLocalStorageValue,
 } from "@/utils/localStorageManager";
 
-export type LectureItem = Record<string, string | number>;
 
 /**
  * 로컬 스토리지에 아이템을 추가하는 핸들러 함수

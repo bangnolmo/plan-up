@@ -1,11 +1,10 @@
 // localStorageManager.ts
 
+import { LectureItem } from "@/app/_configs/cartInfo";
+
 // 로컬 스토리지에 저장되는 데이터 타입 정의
 export type LocalStorageValue = string | number | Record<string, unknown> | Array<unknown>;
-export type LectureItem = {
-    sub_num: string;
-    [key: string]: string | number; // sub_num 외에도 다양한 필드를 가질 수 있는 타입
-};
+
 
 /**
  * 로컬 스토리지 설정 함수
@@ -34,6 +33,11 @@ export const setLocalStorage = (key: string, value: LocalStorageValue) => {
  * @returns 로컬 스토리지의 값 (JSON 파싱된 값 또는 null)
  */
 export const getLocalStorage = (key: string): LocalStorageValue | null => {
+    if (typeof window === "undefined") {
+        // 서버 사이드에서는 localStorage를 사용할 수 없으므로 null 반환
+        return null;
+    }
+    
     const storageValue = localStorage.getItem(key);
     if (storageValue) {
         try {
@@ -151,3 +155,4 @@ export const getLocalStorageItemCount = (key: string): number => {
         return 0;
     }
 };
+

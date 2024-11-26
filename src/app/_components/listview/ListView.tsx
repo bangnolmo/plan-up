@@ -4,12 +4,13 @@
 import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from "@nextui-org/react";
 import { Delete, CopyPlus } from "lucide-react";
 import IconButton from "../IconButton";
+import { LectureItem } from "@/app/_configs/cartInfo";
 
 interface ListViewProps {
     columns: { key: string; label: string }[];
     items: any[];
     actionType?: "none" | "delete" | "add";
-    onActionButtonClick?: (item: Record<string, string | number>) => void;
+    onActionButtonClick?: (item: LectureItem) => void;
 }
 
 const ListView: React.FC<ListViewProps> = ({ columns, items, actionType = "none", onActionButtonClick }) => {

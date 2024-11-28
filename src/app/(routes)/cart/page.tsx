@@ -9,7 +9,7 @@ import { addLocalStorageListener } from "@/utils/eventListenerManager";
 import { columns } from "@/app/_configs/lectureColumns";
 import { Groups, LectureItem } from "@/app/_configs/cartInfo";
 import GroupListView from "@/app/_components/groupview/GroupListView";
-import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@nextui-org/react";
+import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure, Tabs, Tab, } from "@nextui-org/react";
 import { addGroup, removeGroup, removeLectureFromGroup } from "@/utils/groupManager";
 
 const CartTable = () => {
@@ -64,19 +64,11 @@ const CartTable = () => {
     };
 
     const callRemoveLectureFromGroup = (groupId: string, item: LectureItem) => {
-        // if (selectedGroupId) {
-        //     removeLectureFromGroup(groupId, item.sub_num);
-        //     // setGroups((prevGroups) => {
-        //     //     const updatedGroups = {
-        //     //         ...prevGroups,
-        //     //         [selectedGroupId]: [...prevGroups[selectedGroupId], item],
-        //     //     };
-        //     //     setLocalStorage("cartGroups", updatedGroups);
-        //     //     return updatedGroups;
-        //     // });
-        // }
         console.log(groupId);
         removeLectureFromGroup(groupId, item.sub_num);
+        const updatedGroups = getLocalStorage("cartGroups") as Groups;
+        setGroups(updatedGroups);
+
     };
 
     const addLectureToGroup = (groupId: string) => {
@@ -102,16 +94,23 @@ const CartTable = () => {
         <>
             <Header />
             <PageInfo title="장바구니" description="장바구니에 담긴 과목을 확인할 수 있어요" />
-            <ListView columns={columns} items={lectures} actionType="delete" onActionButtonClick={handleCartDeleteClick} />
-            <GroupListView
-                groups={groups}
-                onRemoveGroup={callRemoveGroup}
-                onActionButtonClick={callRemoveLectureFromGroup}
-                onGroupClick={addLectureToGroup}
-            />
-            <div className="mt-4 flex justify-center">
-                <Button onClick={callAddGroup}>그룹 추가</Button>
-            </div>
+            <Tabs>
+                <Tab key="장바구니 목록" title="장바구니 목록">
+                    <ListView columns={columns} items={lectures} actionType="delete" onActionButtonClick={handleCartDeleteClick} />
+                </Tab>
+                <Tab key="그룹 설정" title="그룹 설정">
+                    <GroupListView
+                        groups={groups}
+                        onRemoveGroup={callRemoveGroup}
+                        onActionButtonClick={callRemoveLectureFromGroup}
+                        onGroupClick={addLectureToGroup}
+                    />
+                    <div className="mt-4 flex justify-center">
+                        <Button onClick={callAddGroup}>그룹 추가</Button>
+                    </div>
+                </Tab>
+            </Tabs>
+           
 
             <Modal
                 size="5xl"

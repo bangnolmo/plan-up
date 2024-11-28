@@ -10,6 +10,8 @@ import { handleCartAddClick, handleFloatingCartClick } from "@/utils/cartButtonH
 import FloatingButton from "@/app/_components/FloatingButton";
 import { ShoppingBasket } from "lucide-react";
 import { columns } from "@/app/_configs/lectureColumns";
+import { getLocalStorageItemCount } from "@/utils/localStorageManager";
+import { LectureItem } from "@/app/_configs/cartInfo";
 
 const DynamicLectureTable = () => {
     const [lectures, setLectures] = useState(mockLectures);
@@ -20,6 +22,8 @@ const DynamicLectureTable = () => {
         category: "",
         detail: "",
     });
+
+    const [cartItemCount, setCartItemCount] = useState(0);
 
     if (false) {
         // 린트 해제
@@ -42,6 +46,12 @@ const DynamicLectureTable = () => {
         setFilters((prev) => ({ ...prev, detail }));
     };
 
+    const callHandleCartAddClick = (item: LectureItem) => {
+        handleCartAddClick(item);
+        const cnt = getLocalStorageItemCount("cartItem");
+        setCartItemCount(cnt);
+    }
+
     return (
         <>
             <Header />
@@ -52,10 +62,11 @@ const DynamicLectureTable = () => {
                 onCategoryChange={handleCategoryChange}
                 onDetailChange={handleDetailChange}
             />
-            <ListView columns={columns} items={lectures} actionType="add" onActionButtonClick={handleCartAddClick} />
+            <ListView columns={columns} items={lectures} actionType="add" onActionButtonClick={callHandleCartAddClick} />
             <FloatingButton
                 color="danger"
                 icon={<ShoppingBasket size={30} className="m-2 lg:m-4 text-primary" />}
+                count={cartItemCount}
                 onPress={handleFloatingCartClick}
             />
         </>

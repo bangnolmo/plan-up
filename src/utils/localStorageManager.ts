@@ -21,6 +21,7 @@ export const setLocalStorage = (key: string, value: LocalStorageValue) => {
         const event = new CustomEvent("localStorageChange", {
             detail: { key, value },
         });
+        
         window.dispatchEvent(event);
     } catch (error) {
         console.error("로컬 스토리지 설정 중 오류가 발생했습니다:", error);

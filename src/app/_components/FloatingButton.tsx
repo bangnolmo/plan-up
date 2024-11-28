@@ -1,36 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Badge, Card } from "@nextui-org/react";
-import { getLocalStorageItemCount } from "@/utils/localStorageManager";
-import { addLocalStorageListener } from "@/utils/eventListenerManager";
 
 interface FloatingButtonProps {
     color: "primary" | "secondary" | "success" | "warning" | "danger";
     icon: React.ReactNode;
+    count: number;
     onPress: () => void;
 }
 
-const FloatingButton: React.FC<FloatingButtonProps> = ({ color, icon, onPress }) => {
-    const [data, setData] = useState<number>(0);
-
-    useEffect(() => {
-        // 초기 데이터 로드
-        const fetchData = () => {
-            const localStorageCount = getLocalStorageItemCount("cartItem");
-            setData(localStorageCount);
-        };
-
-        fetchData();
-
-        const unsubscribe = addLocalStorageListener<number>("cartItem", fetchData);
-
-        return () => {
-            unsubscribe();
-        };
-    }, []);
-
+const FloatingButton: React.FC<FloatingButtonProps> = ({ color, icon, count, onPress }) => {
+    
     return (
         <div className="fixed bottom-8 right-4 lg:bottom-16 lg:right-20 z-50">
-            <Badge size="lg" content={data} shape="circle" color={color} isInvisible={data === 0}>
+            <Badge size="lg" content={count} shape="circle" color={color} isInvisible={count === 0}>
                 <Card shadow="lg" radius="lg" isPressable onPress={onPress} isHoverable>
                     {icon}
                 </Card>

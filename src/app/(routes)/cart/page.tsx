@@ -63,7 +63,7 @@ const CartTable = () => {
         setGroups(newGroups);
     };
 
-    const handleActionButtonClick = (groupId: string, item: LectureItem) => {
+    const callRemoveLectureFromGroup = (groupId: string, item: LectureItem) => {
         // if (selectedGroupId) {
         //     removeLectureFromGroup(groupId, item.sub_num);
         //     // setGroups((prevGroups) => {
@@ -79,7 +79,7 @@ const CartTable = () => {
         removeLectureFromGroup(groupId, item.sub_num);
     };
 
-    const goToGroupDetail = (groupId: string) => {
+    const addLectureToGroup = (groupId: string) => {
         setSelectedGroupId(groupId);
         onOpen();
         
@@ -106,8 +106,8 @@ const CartTable = () => {
             <GroupListView
                 groups={groups}
                 onRemoveGroup={callRemoveGroup}
-                onActionButtonClick={handleActionButtonClick}
-                onGroupClick={goToGroupDetail}
+                onActionButtonClick={callRemoveLectureFromGroup}
+                onGroupClick={addLectureToGroup}
             />
             <div className="mt-4 flex justify-center">
                 <Button onClick={callAddGroup}>그룹 추가</Button>

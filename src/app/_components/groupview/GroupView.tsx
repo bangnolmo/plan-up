@@ -4,18 +4,18 @@ import { Delete, CopyPlus } from "lucide-react";
 import IconButton from "../IconButton";
 import ListView from "../listview/ListView";
 
-import { getGroupData } from "../../../utils/groupManager";
 import { columns } from "@/app/_configs/lectureColumns";
 import { LectureItem } from "@/app/_configs/cartInfo";
 
-const GroupView = ({ groupName, onRemove, onActionButtonClick, onGroupClick }: {
+interface GroupViewProps {
     groupName: string;
+    items: LectureItem[];
     onRemove: () => void;
-    // onActionButtonClick: (item: LectureItem) => void;
     onActionButtonClick?: (item: LectureItem) => void;
     onGroupClick: () => void;
-}) => {
-    const items = getGroupData(groupName);
+}
+
+const GroupView: React.FC<GroupViewProps> = ({ groupName, items, onRemove, onActionButtonClick, onGroupClick }) => {
 
     return (
         <div className="group-view" style={{ cursor: "pointer" }}>

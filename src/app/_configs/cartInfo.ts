@@ -6,9 +6,3 @@ export type LectureItem = {
 export type Groups = {
     [key: string]: LectureItem[];
 };
-
-export interface CartStorage extends Record<string, unknown> {
-    groups: {
-        [groupId: string]: LectureItem[]; // 그룹별 과목 리스트
-    };
-}

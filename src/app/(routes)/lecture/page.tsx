@@ -23,7 +23,7 @@ const DynamicLectureTable = () => {
         detail: "",
     });
 
-    const [cartItemCount, setCartItemCount] = useState(0);
+    const [cartItemCount, setCartItemCount] = useState(getLocalStorageItemCount("cartItem"));
 
     if (false) {
         // 린트 해제

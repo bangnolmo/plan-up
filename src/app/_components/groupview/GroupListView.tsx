@@ -1,23 +1,27 @@
 // GroupList 컴포넌트
 import React from "react";
 import GroupView from "./GroupView";
-import { LectureItem } from "@/app/_configs/cartInfo";
+import { Groups, LectureItem } from "@/app/_configs/cartInfo";
 
-const GroupListView = ({ groups, onRemoveGroup, onActionButtonClick, onGroupClick }: {
-    groups: { id: string; name: string;}[];
+interface GroupListViewProps {
+    groups: Groups;
     onRemoveGroup: (groupId: string) => void;
     onActionButtonClick: (groupId: string, item: LectureItem) => void;
     onGroupClick: (groupId: string) => void;
-}) => {
+}
+
+const GroupListView: React.FC<GroupListViewProps> = ({ groups, onRemoveGroup, onActionButtonClick, onGroupClick }) => {
     return (
         <div>
-            {groups.map((group) => (
+            {Object.keys(groups).map((groupId: string) => (
+                
                 <GroupView
-                    key={group.id}
-                    groupName={group.name}
-                    onRemove={() => onRemoveGroup(group.id)}
-                    onActionButtonClick={(item) => onActionButtonClick(group.id, item)}
-                    onGroupClick={() => onGroupClick(group.id)}
+                    key={groupId}
+                    groupName={groupId}
+                    items={groups[groupId]}
+                    onRemove={() => onRemoveGroup(groupId)}
+                    onActionButtonClick={(item) => onActionButtonClick(groupId, item)}
+                    onGroupClick={() => onGroupClick(groupId)}
                 />
             ))}
         </div>

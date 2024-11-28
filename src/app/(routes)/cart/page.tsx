@@ -7,9 +7,10 @@ import { handleCartDeleteClick } from "@/utils/cartButtonHandler";
 import { getLocalStorage, setLocalStorage } from "@/utils/localStorageManager";
 import { addLocalStorageListener } from "@/utils/eventListenerManager";
 import { columns } from "@/app/_configs/lectureColumns";
-import { LectureItem } from "@/app/_configs/cartInfo";
+import { Groups, LectureItem } from "@/app/_configs/cartInfo";
 import GroupListView from "@/app/_components/groupview/GroupListView";
 import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@nextui-org/react";
+import { addGroup, removeGroup, removeLectureFromGroup } from "@/utils/groupManager";
 
 const CartTable = () => {
     const [lectures, setLectures] = useState<LectureItem[]>([]);
@@ -46,68 +47,36 @@ const CartTable = () => {
         };
     }, []);
 
-    const [groups, setGroups] = useState<{ id: string; name: string; }[]>(() => {
-        const cartGroups = getLocalStorage("cartGroups") as { groups: Record<string, unknown[]> } | null;
-        if (cartGroups && typeof cartGroups === "object" && 'groups' in cartGroups) {
-            return Object.keys(cartGroups.groups).map((key) => ({ id: key, name: key }));
-        }
-        return [];
+    const [groups, setGroups] = useState<Groups>(() => {
+        const cartGroups = getLocalStorage("cartGroups") as Groups | null;
+        return cartGroups || {};
     });
 
-    const addGroup = () => {
-        setGroups((prevGroups) => {
-            const newGroup = { id: `group${prevGroups.length + 1}`, name: `group${prevGroups.length + 1}` };
-            const updatedGroups = [...prevGroups, newGroup];
-            const cartGroups = (getLocalStorage("cartGroups") as { groups: Record<string, unknown[]> } | null) || { groups: {} };
-            cartGroups.groups[newGroup.id] = [];
-            setLocalStorage("cartGroups", cartGroups);
-            return updatedGroups;
-        });
+    const callAddGroup = () => {
+        addGroup();
+        const updatedGroups = getLocalStorage("cartGroups") as Groups;
+        setGroups(updatedGroups);
     };
 
-    const removeGroup = (groupId: string) => {
-        setGroups((prevGroups) => {
-            const cartGroups = (getLocalStorage("cartGroups") as { groups: Record<string, LectureItem[]> } | null) || { groups: {} };
-            const updatedGroups = prevGroups
-                .filter((group) => !(group.id === groupId)) // 그룹 삭제
-                .map((group, index) => {
-                    const newGroupId = `group${index + 1}`;
-                    return {
-                        ...group,
-                        id: newGroupId,
-                        name: `group${index + 1}`
-                    };
-                });
-
-            // 삭제된 이후의 그룹을 재정렬하여 로컬스토리지에 저장
-            const reorderedGroups: Record<string, LectureItem[]> = {};
-            updatedGroups.forEach((group, index) => {
-                const oldGroupId = prevGroups[index + (index >= Number(groupId.replace('group', '')) ? 1 : 0)].id;
-                reorderedGroups[group.id] = cartGroups.groups[oldGroupId] || [];
-            });
-
-            setLocalStorage("cartGroups", { groups: reorderedGroups });
-
-            return updatedGroups;
-        });
+    const callRemoveGroup = (groupId: string) => {
+        const newGroups = removeGroup(groupId);
+        setGroups(newGroups);
     };
-
 
     const handleActionButtonClick = (groupId: string, item: LectureItem) => {
-        const cartGroups = (getLocalStorage("cartGroups") as { groups: Record<string, LectureItem[]> }) || { groups: {} };
-        if (cartGroups && typeof cartGroups === 'object' && 'groups' in cartGroups && cartGroups.groups[groupId]) {
-            cartGroups.groups[groupId] = (cartGroups.groups[groupId] as LectureItem[]).filter((lecture) => lecture.sub_num !== item.sub_num);
-            setLocalStorage("cartGroups", cartGroups);
-        }
-        setGroups((prevGroups) => prevGroups.map((group) => {
-            if (group.id === groupId) {
-                return {
-                    ...group,
-                    items: (cartGroups.groups && cartGroups.groups[groupId]) ? cartGroups.groups[groupId] : []
-                };
-            }
-            return group;
-        }));
+        // if (selectedGroupId) {
+        //     removeLectureFromGroup(groupId, item.sub_num);
+        //     // setGroups((prevGroups) => {
+        //     //     const updatedGroups = {
+        //     //         ...prevGroups,
+        //     //         [selectedGroupId]: [...prevGroups[selectedGroupId], item],
+        //     //     };
+        //     //     setLocalStorage("cartGroups", updatedGroups);
+        //     //     return updatedGroups;
+        //     // });
+        // }
+        console.log(groupId);
+        removeLectureFromGroup(groupId, item.sub_num);
     };
 
     const goToGroupDetail = (groupId: string) => {
@@ -118,20 +87,14 @@ const CartTable = () => {
 
     const handleAddToGroup = (item: LectureItem) => {
         if (selectedGroupId) {
-            const cartGroups = (getLocalStorage("cartGroups") as { groups: Record<string, LectureItem[]> }) || { groups: {} };
-            if (cartGroups.groups[selectedGroupId]) {
-                cartGroups.groups[selectedGroupId].push(item);
-                setLocalStorage("cartGroups", cartGroups);
-            }
-            setGroups((prevGroups) => prevGroups.map((group) => {
-                if (group.id === selectedGroupId) {
-                    return {
-                        ...group,
-                        items: cartGroups.groups[selectedGroupId]
-                    };
-                }
-                return group;
-            }));
+            setGroups((prevGroups) => {
+                const updatedGroups = {
+                    ...prevGroups,
+                    [selectedGroupId]: [...prevGroups[selectedGroupId], item],
+                };
+                setLocalStorage("cartGroups", updatedGroups);
+                return updatedGroups;
+            });
         }
     };
 
@@ -142,12 +105,12 @@ const CartTable = () => {
             <ListView columns={columns} items={lectures} actionType="delete" onActionButtonClick={handleCartDeleteClick} />
             <GroupListView
                 groups={groups}
-                onRemoveGroup={removeGroup}
+                onRemoveGroup={callRemoveGroup}
                 onActionButtonClick={handleActionButtonClick}
                 onGroupClick={goToGroupDetail}
             />
             <div className="mt-4 flex justify-center">
-                <Button onClick={addGroup}>그룹 추가</Button>
+                <Button onClick={callAddGroup}>그룹 추가</Button>
             </div>
 
             <Modal

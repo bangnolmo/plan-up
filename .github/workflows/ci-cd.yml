@@ -33,7 +33,11 @@ jobs:
                   NEXT_PUBLIC_FRONTEND_URL: ${{ secrets.NEXT_PUBLIC_FRONTEND_URL }}
                   NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
                   NEXT_PUBLIC_GOOGLE_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}
-              run: npm run build
+              run: |
+                  echo "NEXT_PUBLIC_FRONTEND_URL=$NEXT_PUBLIC_FRONTEND_URL"
+                  echo "NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL"
+                  echo "NEXT_PUBLIC_GOOGLE_CLIENT_ID=$NEXT_PUBLIC_GOOGLE_CLIENT_ID"
+                  npm run build
 
             - name: Docker Hub 로그인
               uses: docker/login-action@v2

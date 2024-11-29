@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
+import { Popover, PopoverTrigger, PopoverContent, Button } from "@nextui-org/react";
 import { handleCartAddClick, handleFloatingCartClick } from "@/utils/cartButtonHandler";
 import FloatingButton from "@/app/_components/FloatingButton";
 import { ShoppingBasket } from "lucide-react";
@@ -9,25 +10,20 @@ import Header from "@/app/_components/Header";
 import PageInfo from "@/app/_components/PageInfo";
 import SearchForm from "@/app/_components/searchform/SearchForm";
 import ListView from "@/app/_components/listview/ListView";
-import { Button } from "@nextui-org/react";
 import { getLocalStorageItemCount } from "@/utils/localStorageManager";
 import { LectureItem } from "@/app/_configs/commonInfo";
+import { getSemester, getYear } from "@/utils/defaultSearchParams";
 
 const DynamicLectureTable = () => {
-    const [lectures, setLectures] = useState([]);
+    const [lectures, setLectures] = useState<LectureItem[] | null>(null);
     const [filters, setFilters] = useState({
-        year: "",
-        semester: "",
+        year: getYear().toString(),
+        semester: getSemester(),
         category: "",
         detail: "",
     });
 
     const [cartItemCount, setCartItemCount] = useState(getLocalStorageItemCount("cartItem"));
-
-    if (false) {
-        // 린트 해제
-        console.log(setLectures, filters);
-    }
 
     const handleYearChange = (year: string) => {
         setFilters((prev) => ({ ...prev, year }));
@@ -61,14 +57,13 @@ const DynamicLectureTable = () => {
         }
     };
 
-    // Check if both year and semester are selected
-    const isSearchDisabled = !filters.year || !filters.semester;
+    const isDetailEmpty = !filters.detail;
 
     const callHandleCartAddClick = (item: LectureItem) => {
         handleCartAddClick(item);
         const cnt = getLocalStorageItemCount("cartItem");
         setCartItemCount(cnt);
-    }
+    };
 
     return (
         <>
@@ -82,19 +77,41 @@ const DynamicLectureTable = () => {
             />
 
             <div className="m-2 flex justify-center">
-                <Button onClick={handleSearchClick} color="primary" disabled={isSearchDisabled}>
-                    검색
-                </Button>
+                {isDetailEmpty && (
+                    <Popover placement="right">
+                        <PopoverTrigger>
+                            <Button onClick={handleSearchClick} color={isDetailEmpty ? "secondary" : "primary"} disabled={isDetailEmpty}>
+                                검색
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent>
+                            <div className="px-1 py-2">
+                                <div className="text-small font-bold">모든 항목을 채워주세요.</div>
+                                <div className="text-tiny">아직 입력되지 않은 값이 존재합니다.</div>
+                            </div>
+                        </PopoverContent>
+                    </Popover>
+                )}
+                {!isDetailEmpty && (
+                    <Button onClick={handleSearchClick} color={isDetailEmpty ? "secondary" : "primary"} disabled={isDetailEmpty}>
+                        검색
+                    </Button>
+                )}
             </div>
 
-            {isSearchDisabled && (
+            {isDetailEmpty && (
                 <div className="text-gray-500 text-center text-sm my-16 mx-4">
                     개설년도 및 학기를 선택 후,
                     <br />
                     검색 버튼을 눌러 과목을 조회하세요.
                 </div>
             )}
-            {lectures.length > 0 && <ListView columns={columns} items={lectures} actionType="add" onActionButtonClick={callHandleCartAddClick} />}
+
+            {lectures && lectures.length > 0 && (
+                <ListView columns={columns} items={lectures} actionType="add" onActionButtonClick={callHandleCartAddClick} />
+            )}
+
+            {!isDetailEmpty && !lectures && <div className="text-center text-sm text-gray-500 my-16">검색 결과가 없습니다.</div>}
 
             <FloatingButton
                 color="danger"

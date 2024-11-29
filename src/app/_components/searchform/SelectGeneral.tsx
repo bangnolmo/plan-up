@@ -80,7 +80,6 @@ export default function SelectGeneral({ selectedGeneral, onSelectionChange, year
                 value={selectedGeneral}
                 disabledKeys={["loading"]}
                 onSelectionChange={(value) => onSelectionChange(value as string)}
-                className="max-w-xs"
                 scrollShadowProps={{
                     isEnabled: false,
                 }}
@@ -102,7 +101,6 @@ export default function SelectGeneral({ selectedGeneral, onSelectionChange, year
                 value={selectedGeneral}
                 disabledKeys={["error"]}
                 onSelectionChange={(value) => onSelectionChange(value as string)}
-                className="max-w-xs"
                 scrollShadowProps={{
                     isEnabled: false,
                 }}
@@ -122,7 +120,6 @@ export default function SelectGeneral({ selectedGeneral, onSelectionChange, year
             variant="bordered"
             value={selectedGeneral}
             onSelectionChange={(value) => onSelectionChange(value as string)}
-            className="max-w-xs"
             scrollShadowProps={{
                 isEnabled: false,
             }}

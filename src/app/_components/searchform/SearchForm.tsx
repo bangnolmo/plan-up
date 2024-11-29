@@ -4,6 +4,7 @@ import SelectYear from "./SelectYear";
 import SelectSemester from "./SelectSemester";
 import SelectMajor from "./SelectMajor";
 import SelectGeneral from "./SelectGeneral";
+import { getYear, getSemester } from "@/utils/defaultSearchParams";
 
 interface SearchFormProps {
     onYearChange: (year: string) => void;
@@ -13,10 +14,8 @@ interface SearchFormProps {
 }
 
 export default function SearchForm({ onYearChange, onSemesterChange, onCategoryChange, onDetailChange }: SearchFormProps) {
-    const currentYear = new Date().getFullYear();
-    const currentMonth = new Date().getMonth() + 1;
-    const [selectedYear, setSelectedYear] = useState<string>(currentYear.toString());
-    const [selectedSemester, setSelectedSemester] = useState<string>(currentMonth <= 6 ? "10" : "20");
+    const [selectedYear, setSelectedYear] = useState<string>(getYear().toString());
+    const [selectedSemester, setSelectedSemester] = useState<string>(getSemester());
     const [category, setCategory] = useState<string>("general");
     const [detail, setDetail] = useState<string>("");
 
@@ -42,7 +41,15 @@ export default function SearchForm({ onYearChange, onSemesterChange, onCategoryC
 
     return (
         <div className="m-2 p-2 sm:m-2 sm:p-4">
-            <Tabs aria-label="교양 / 전공 선택" selectedKey={category} onSelectionChange={(key) => handleCategoryChange(key.toString())}>
+            <Tabs
+                aria-label="교양 / 전공 선택"
+                selectedKey={category}
+                onSelectionChange={(key) => handleCategoryChange(key.toString())}
+                variant="underlined"
+                size="lg"
+                color="primary"
+                className="m-2 mt-0 font-semibold"
+            >
                 <Tab key="general" title="교양">
                     <Card>
                         <CardBody>

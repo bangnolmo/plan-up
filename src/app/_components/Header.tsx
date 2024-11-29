@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, DropdownTrigger, Dropdown, Avatar } from "@nextui-org/react";
 import Menu from "./Menu";
-import { Logo } from "./Logo";
+import { Logo } from "./icon/LogoIcon";
 
 export default function App() {
     const pathname = usePathname();

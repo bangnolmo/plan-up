@@ -36,8 +36,6 @@ export default function SelectGeneral({ selectedGeneral, onSelectionChange, year
                 setGenerals(data);
             } catch (err) {
                 setError("Failed to load general data");
-                console.log(`${process.env.NEXT_PUBLIC_API_URL}`);
-                console.log(`${process.env.NEXT_PUBLIC_FRONTEND_URL}`);
                 console.log(err);
             } finally {
                 setLoading(false);

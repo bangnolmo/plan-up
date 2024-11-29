@@ -1,39 +1,39 @@
 {
-  "name": "plan-up",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
-  "dependencies": {
-    "@emotion/react": "^11.13.3",
-    "@emotion/styled": "^11.13.0",
-    "@nextui-org/react": "^2.4.8",
-    "dotenv": "^16.4.5",
-    "framer-motion": "^11.11.17",
-    "js-cookie": "^3.0.5",
-    "lucide-react": "^0.460.0",
-    "next": "15.0.3",
-    "next-themes": "^0.4.3",
-    "node-fetch": "^3.3.2",
-    "prettier": "^3.3.3",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-icons": "^5.3.0",
-    "styled-components": "^6.1.13"
-  },
-  "devDependencies": {
-    "@types/js-cookie": "^3.0.6",
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "eslint": "^8",
-    "eslint-config-next": "15.0.3",
-    "postcss": "^8",
-    "tailwindcss": "^3.4.1",
-    "typescript": "^5"
-  }
+    "name": "plan-up",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev",
+        "build": "echo 'NEXT_PUBLIC_FRONTEND_URL=$NEXT_PUBLIC_FRONTEND_URL' && echo 'NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL' && echo 'NEXT_PUBLIC_GOOGLE_CLIENT_ID=$NEXT_PUBLIC_GOOGLE_CLIENT_ID' && next build",
+        "start": "echo 'NEXT_PUBLIC_FRONTEND_URL=$NEXT_PUBLIC_FRONTEND_URL' && echo 'NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL' && echo 'NEXT_PUBLIC_GOOGLE_CLIENT_ID=$NEXT_PUBLIC_GOOGLE_CLIENT_ID' && next start",
+        "lint": "next lint"
+    },
+    "dependencies": {
+        "@emotion/react": "^11.13.3",
+        "@emotion/styled": "^11.13.0",
+        "@nextui-org/react": "^2.4.8",
+        "dotenv": "^16.4.5",
+        "framer-motion": "^11.11.17",
+        "js-cookie": "^3.0.5",
+        "lucide-react": "^0.460.0",
+        "next": "15.0.3",
+        "next-themes": "^0.4.3",
+        "node-fetch": "^3.3.2",
+        "prettier": "^3.3.3",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1",
+        "react-icons": "^5.3.0",
+        "styled-components": "^6.1.13"
+    },
+    "devDependencies": {
+        "@types/js-cookie": "^3.0.6",
+        "@types/node": "^20",
+        "@types/react": "^18",
+        "@types/react-dom": "^18",
+        "eslint": "^8",
+        "eslint-config-next": "15.0.3",
+        "postcss": "^8",
+        "tailwindcss": "^3.4.1",
+        "typescript": "^5"
+    }
 }

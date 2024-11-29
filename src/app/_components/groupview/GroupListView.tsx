@@ -1,7 +1,7 @@
 // GroupList 컴포넌트
 import React from "react";
 import GroupView from "./GroupView";
-import { Groups, LectureItem } from "@/app/_configs/cartInfo";
+import { Groups, LectureItem } from "@/app/_configs/commonInfo";
 
 interface GroupListViewProps {
     groups: Groups;

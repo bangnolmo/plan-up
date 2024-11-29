@@ -1,6 +1,6 @@
 // localStorageManager.ts
 
-import { LectureItem } from "@/app/_configs/cartInfo";
+import { LectureItem } from "@/app/_configs/commonInfo";
 
 // 로컬 스토리지에 저장되는 데이터 타입 정의
 export type LocalStorageValue = string | number | Record<string, unknown> | Array<unknown>;

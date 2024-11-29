@@ -1,4 +1,4 @@
-import { LectureItem } from "@/app/_configs/cartInfo";
+import { LectureItem } from "@/app/_configs/commonInfo";
 import {
     deleteLocalStorageValue,
     getLocalStorage,

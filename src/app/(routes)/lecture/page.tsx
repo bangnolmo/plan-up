@@ -11,7 +11,7 @@ import FloatingButton from "@/app/_components/FloatingButton";
 import { ShoppingBasket } from "lucide-react";
 import { columns } from "@/app/_configs/lectureColumns";
 import { getLocalStorageItemCount } from "@/utils/localStorageManager";
-import { LectureItem } from "@/app/_configs/cartInfo";
+import { LectureItem } from "@/app/_configs/commonInfo";
 
 const DynamicLectureTable = () => {
     const [lectures, setLectures] = useState(mockLectures);

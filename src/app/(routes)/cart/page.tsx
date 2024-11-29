@@ -7,7 +7,7 @@ import { handleCartDeleteClick } from "@/utils/cartButtonHandler";
 import { getLocalStorage, setLocalStorage } from "@/utils/localStorageManager";
 import { addLocalStorageListener } from "@/utils/eventListenerManager";
 import { columns } from "@/app/_configs/lectureColumns";
-import { Groups, LectureItem } from "@/app/_configs/cartInfo";
+import { Groups, LectureItem } from "@/app/_configs/commonInfo";
 import GroupListView from "@/app/_components/groupview/GroupListView";
 import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure, Tabs, Tab, } from "@nextui-org/react";
 import { addGroup, removeGroup, removeLectureFromGroup } from "@/utils/groupManager";

@@ -16,3 +16,13 @@ export const dayMapping = {
     목: 30,
     금: 40,
 };
+
+export type timeTable = {
+    totalGrade: number;
+    totalTime: number[];
+    classItem: LectureItem[];
+}
+
+export type TimeTalbeList = {
+    [key: string]: timeTable[];
+};

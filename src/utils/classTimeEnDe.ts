@@ -1,4 +1,4 @@
-import { dayMapping } from "@/app/_configs/cartInfo";
+import { dayMapping } from "@/app/_configs/commonInfo";
 
 export const enClassTime = (classTimeInfo: string): number[] => {
     const dayInfo = classTimeInfo.split(" ");

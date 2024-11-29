@@ -4,7 +4,7 @@
 import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from "@nextui-org/react";
 import { Delete, CopyPlus } from "lucide-react";
 import IconButton from "../IconButton";
-import { LectureItem } from "@/app/_configs/cartInfo";
+import { LectureItem } from "@/app/_configs/commonInfo";
 
 interface ListViewProps {
     columns: { key: string; label: string }[];

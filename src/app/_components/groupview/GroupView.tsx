@@ -5,7 +5,7 @@ import IconButton from "../IconButton";
 import ListView from "../listview/ListView";
 
 import { columns } from "@/app/_configs/lectureColumns";
-import { LectureItem } from "@/app/_configs/cartInfo";
+import { LectureItem } from "@/app/_configs/commonInfo";
 
 interface GroupViewProps {
     groupName: string;

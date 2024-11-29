@@ -1,4 +1,4 @@
-import { LectureItem, Groups } from "@/app/_configs/cartInfo";
+import { LectureItem, Groups } from "@/app/_configs/commonInfo";
 import { getLocalStorage, setLocalStorage } from "./localStorageManager";
 
 

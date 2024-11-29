@@ -4,8 +4,8 @@
     "private": true,
     "scripts": {
         "dev": "next dev",
-        "build": "echo 'NEXT_PUBLIC_FRONTEND_URL=$NEXT_PUBLIC_FRONTEND_URL' && echo 'NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL' && echo 'NEXT_PUBLIC_GOOGLE_CLIENT_ID=$NEXT_PUBLIC_GOOGLE_CLIENT_ID' && next build",
-        "start": "echo 'NEXT_PUBLIC_FRONTEND_URL=$NEXT_PUBLIC_FRONTEND_URL' && echo 'NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL' && echo 'NEXT_PUBLIC_GOOGLE_CLIENT_ID=$NEXT_PUBLIC_GOOGLE_CLIENT_ID' && next start",
+        "build": "next build",
+        "start": "next start",
         "lint": "next lint"
     },
     "dependencies": {

@@ -73,6 +73,7 @@ export default function SelectGeneral({ selectedGeneral, onSelectionChange, year
     if (loading) {
         return (
             <Autocomplete
+                isRequired
                 label="시간대 구분"
                 placeholder="구분을 가져오는 중입니다..."
                 variant="bordered"
@@ -94,6 +95,7 @@ export default function SelectGeneral({ selectedGeneral, onSelectionChange, year
     if (error) {
         return (
             <Autocomplete
+                isRequired
                 label="시간대 구분"
                 placeholder="구분을 가져올 수 없습니다."
                 variant="bordered"
@@ -114,6 +116,7 @@ export default function SelectGeneral({ selectedGeneral, onSelectionChange, year
 
     return (
         <Autocomplete
+            isRequired
             label="시간대 구분"
             placeholder="구분을 입력하세요"
             variant="bordered"

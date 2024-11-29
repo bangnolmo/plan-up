@@ -70,6 +70,7 @@ export default function SelectMajor({ selectedMajor, onSelectionChange, year, ha
     if (loading) {
         return (
             <Autocomplete
+                isRequired
                 label="전공 선택"
                 variant="bordered"
                 placeholder="전공 목록을 가져오는 중입니다..."
@@ -91,6 +92,7 @@ export default function SelectMajor({ selectedMajor, onSelectionChange, year, ha
     if (error) {
         return (
             <Autocomplete
+                isRequired
                 label="전공 선택"
                 variant="bordered"
                 placeholder="전공 목록을 가져올 수 없습니다."
@@ -111,6 +113,7 @@ export default function SelectMajor({ selectedMajor, onSelectionChange, year, ha
 
     return (
         <Autocomplete
+            isRequired
             label="전공 선택"
             variant="bordered"
             placeholder="전공을 입력하세요"

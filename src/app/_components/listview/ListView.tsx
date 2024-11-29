@@ -20,47 +20,55 @@ const ListView: React.FC<ListViewProps> = ({ columns, items, actionType = "none"
             <Table aria-label="Dynamic Table" selectionMode="none">
                 <TableHeader columns={dynamicColumns}>{(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}</TableHeader>
                 <TableBody items={items}>
-                    {(item) => (
-                        <TableRow key={item.sub_num}>
-                            {dynamicColumns.map((column) =>
-                                column.key === "action" ? (
-                                    <TableCell key={column.key}>
-                                        {actionType === "delete" && (
-                                            <IconButton
-                                                aria-label="Delete item"
-                                                onPress={() => {
-                                                    if (onActionButtonClick) {
-                                                        onActionButtonClick(item);
-                                                    }
-                                                }}
-                                                icon={<Delete size="16" strokeWidth={2.75} />}
-                                                color="danger"
-                                                ariaLabel="Delete"
-                                                hovermsg="장바구니에서 삭제"
-                                                size="sm"
-                                            />
-                                        )}
-                                        {actionType === "add" && (
-                                            <IconButton
-                                                aria-label="Add item"
-                                                onPress={() => {
-                                                    if (onActionButtonClick) {
-                                                        onActionButtonClick(item);
-                                                    }
-                                                }}
-                                                icon={<CopyPlus size="16" strokeWidth={2.75} />}
-                                                color="primary"
-                                                ariaLabel="Add"
-                                                hovermsg="장바구니 추가"
-                                                size="sm"
-                                            />
-                                        )}
-                                    </TableCell>
-                                ) : (
-                                    <TableCell key={column.key}>{item[column.key as keyof typeof item]}</TableCell>
-                                )
-                            )}
+                    {items.length === 0 ? (
+                        <TableRow>
+                            <TableCell colSpan={dynamicColumns.length} style={{ textAlign: "center" }}>
+                                일치하는 항목을 찾을 수 없습니다
+                            </TableCell>
                         </TableRow>
+                    ) : (
+                        items.map((item) => (
+                            <TableRow key={item.sub_num}>
+                                {dynamicColumns.map((column) =>
+                                    column.key === "action" ? (
+                                        <TableCell key={column.key}>
+                                            {actionType === "delete" && (
+                                                <IconButton
+                                                    aria-label="Delete item"
+                                                    onPress={() => {
+                                                        if (onActionButtonClick) {
+                                                            onActionButtonClick(item);
+                                                        }
+                                                    }}
+                                                    icon={<Delete size="16" strokeWidth={2.75} />}
+                                                    color="danger"
+                                                    ariaLabel="Delete"
+                                                    hovermsg="장바구니에서 삭제"
+                                                    size="sm"
+                                                />
+                                            )}
+                                            {actionType === "add" && (
+                                                <IconButton
+                                                    aria-label="Add item"
+                                                    onPress={() => {
+                                                        if (onActionButtonClick) {
+                                                            onActionButtonClick(item);
+                                                        }
+                                                    }}
+                                                    icon={<CopyPlus size="16" strokeWidth={2.75} />}
+                                                    color="primary"
+                                                    ariaLabel="Add"
+                                                    hovermsg="장바구니 추가"
+                                                    size="sm"
+                                                />
+                                            )}
+                                        </TableCell>
+                                    ) : (
+                                        <TableCell key={column.key}>{item[column.key as keyof typeof item]}</TableCell>
+                                    )
+                                )}
+                            </TableRow>
+                        ))
                     )}
                 </TableBody>
             </Table>

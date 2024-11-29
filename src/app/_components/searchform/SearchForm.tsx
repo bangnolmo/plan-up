@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Card, CardBody, Tabs, Tab, Button } from "@nextui-org/react";
+import { Card, CardBody, Tabs, Tab } from "@nextui-org/react";
 import SelectYear from "./SelectYear";
 import SelectSemester from "./SelectSemester";
 import SelectMajor from "./SelectMajor";
@@ -40,13 +40,6 @@ export default function SearchForm({ onYearChange, onSemesterChange, onCategoryC
         onDetailChange(newDetail);
     };
 
-    const handleSearchClick = () => {
-        console.log("Selected Year:", selectedYear);
-        console.log("Selected Semester:", selectedSemester);
-        console.log("Category:", category);
-        console.log("Detail:", detail);
-    };
-
     return (
         <div className="m-2 p-2 sm:m-2 sm:p-4">
             <Tabs aria-label="교양 / 전공 선택" selectedKey={category} onSelectionChange={(key) => handleCategoryChange(key.toString())}>
@@ -83,12 +76,6 @@ export default function SearchForm({ onYearChange, onSemesterChange, onCategoryC
                     </Card>
                 </Tab>
             </Tabs>
-
-            <div className="mt-4 flex justify-center">
-                <Button onClick={handleSearchClick} color="primary">
-                    조회
-                </Button>
-            </div>
         </div>
     );
 }

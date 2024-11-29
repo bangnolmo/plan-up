@@ -1,11 +1,13 @@
 "use client";
 
+import React, { Suspense } from "react";
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import Header from "@/app/_components/Header";
 import PageInfo from "@/app/_components/PageInfo";
 
+// GoogleCallback 컴포넌트
 const GoogleCallback = () => {
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -62,4 +64,11 @@ const GoogleCallback = () => {
     );
 };
 
-export default GoogleCallback;
+// Suspense Boundary로 페이지 전체를 감싸기
+export default function SuspenseWrapper() {
+    return (
+        <Suspense fallback={<div>로딩 중...</div>}>
+            <GoogleCallback />
+        </Suspense>
+    );
+}

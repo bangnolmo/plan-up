@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import { Select, SelectItem } from "@nextui-org/react";
 
@@ -17,7 +15,10 @@ export default function SelectYear({ selectedYear, onSelectionChange }: SelectYe
             isRequired
             label="개설년도"
             value={selectedYear}
-            onSelectionChange={(value) => onSelectionChange(value as string)}
+            onSelectionChange={(value) => {
+                const stringValue = value?.currentKey;
+                if (stringValue) onSelectionChange(stringValue);
+            }}
             className="max-w-xs"
         >
             {years.map((year) => (

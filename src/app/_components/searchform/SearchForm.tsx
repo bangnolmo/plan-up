@@ -1,7 +1,5 @@
-"use client";
-
 import React, { useState } from "react";
-import { Card, CardBody, Tabs, Tab, Button } from "@nextui-org/react";
+import { Card, CardBody, Tabs, Tab } from "@nextui-org/react";
 import SelectYear from "./SelectYear";
 import SelectSemester from "./SelectSemester";
 import SelectMajor from "./SelectMajor";
@@ -16,8 +14,9 @@ interface SearchFormProps {
 
 export default function SearchForm({ onYearChange, onSemesterChange, onCategoryChange, onDetailChange }: SearchFormProps) {
     const currentYear = new Date().getFullYear();
-    const [selectedYear, setSelectedYear] = useState(currentYear.toString());
-    const [selectedSemester, setSelectedSemester] = useState("10");
+    const currentMonth = new Date().getMonth() + 1;
+    const [selectedYear, setSelectedYear] = useState<string>(currentYear.toString());
+    const [selectedSemester, setSelectedSemester] = useState<string>(currentMonth <= 6 ? "10" : "20");
     const [category, setCategory] = useState<string>("general");
     const [detail, setDetail] = useState<string>("");
 
@@ -41,13 +40,6 @@ export default function SearchForm({ onYearChange, onSemesterChange, onCategoryC
         onDetailChange(newDetail);
     };
 
-    const handleSearchClick = () => {
-        console.log("Selected Year:", selectedYear);
-        console.log("Selected Semester:", selectedSemester);
-        console.log("Category:", category);
-        console.log("Detail:", detail);
-    };
-
     return (
         <div className="m-2 p-2 sm:m-2 sm:p-4">
             <Tabs aria-label="교양 / 전공 선택" selectedKey={category} onSelectionChange={(key) => handleCategoryChange(key.toString())}>
@@ -57,7 +49,12 @@ export default function SearchForm({ onYearChange, onSemesterChange, onCategoryC
                             <div className="flex flex-col sm:flex-row gap-4 items-center">
                                 <SelectYear selectedYear={selectedYear} onSelectionChange={handleYearSelectionChange} />
                                 <SelectSemester selectedSemester={selectedSemester} onSelectionChange={handleSemesterSelectionChange} />
-                                <SelectGeneral selectedGeneral={detail} onSelectionChange={handleDetailChange} />
+                                <SelectGeneral
+                                    selectedGeneral={detail}
+                                    onSelectionChange={handleDetailChange}
+                                    year={selectedYear}
+                                    hakgi={selectedSemester}
+                                />
                             </div>
                         </CardBody>
                     </Card>
@@ -68,18 +65,17 @@ export default function SearchForm({ onYearChange, onSemesterChange, onCategoryC
                             <div className="flex flex-col sm:flex-row gap-4 items-center">
                                 <SelectYear selectedYear={selectedYear} onSelectionChange={handleYearSelectionChange} />
                                 <SelectSemester selectedSemester={selectedSemester} onSelectionChange={handleSemesterSelectionChange} />
-                                <SelectMajor selectedMajor={detail} onSelectionChange={handleDetailChange} />
+                                <SelectMajor
+                                    selectedMajor={detail}
+                                    onSelectionChange={handleDetailChange}
+                                    year={selectedYear}
+                                    hakgi={selectedSemester}
+                                />
                             </div>
                         </CardBody>
                     </Card>
                 </Tab>
             </Tabs>
-
-            <div className="mt-4 flex justify-center">
-                <Button onClick={handleSearchClick} color="primary">
-                    조회
-                </Button>
-            </div>
         </div>
     );
 }

@@ -2,6 +2,7 @@
 
 import { DropdownItem, DropdownMenu } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
+import { ThemeSwitcher } from "@/app/_components/ThemeSwitcher"; // ThemeSwitcher를 import
 
 export default function Menu() {
     const router = useRouter();
@@ -16,9 +17,6 @@ export default function Menu() {
                 break;
             case "lecture":
                 router.push("/lecture");
-                break;
-            case "login":
-                router.push("/login");
                 break;
             case "profile":
                 router.push("/my");
@@ -41,8 +39,8 @@ export default function Menu() {
 
             <DropdownItem key="lecture">개설과목 조회</DropdownItem>
 
-            <DropdownItem key="login" color="success">
-                로그인
+            <DropdownItem key="theme-switcher">
+                <ThemeSwitcher />
             </DropdownItem>
         </DropdownMenu>
     );

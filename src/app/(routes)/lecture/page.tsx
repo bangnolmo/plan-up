@@ -1,21 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import ListView from "@/app/_components/listview/ListView";
-import { mockLectures } from "@/app/_mocks/mockLectureData";
-import Header from "@/app/_components/Header";
-import PageInfo from "@/app/_components/PageInfo";
-import SearchForm from "@/app/_components/searchform/SearchForm";
 import { handleCartAddClick, handleFloatingCartClick } from "@/utils/cartButtonHandler";
 import FloatingButton from "@/app/_components/FloatingButton";
 import { ShoppingBasket } from "lucide-react";
 import { columns } from "@/app/_configs/lectureColumns";
+import Header from "@/app/_components/Header";
+import PageInfo from "@/app/_components/PageInfo";
+import SearchForm from "@/app/_components/searchform/SearchForm";
+import ListView from "@/app/_components/listview/ListView";
+import { Button } from "@nextui-org/react";
 import { getLocalStorageItemCount } from "@/utils/localStorageManager";
 import { LectureItem } from "@/app/_configs/commonInfo";
 
 const DynamicLectureTable = () => {
-    const [lectures, setLectures] = useState(mockLectures);
-
+    const [lectures, setLectures] = useState([]);
     const [filters, setFilters] = useState({
         year: "",
         semester: "",
@@ -46,6 +45,25 @@ const DynamicLectureTable = () => {
         setFilters((prev) => ({ ...prev, detail }));
     };
 
+    const handleSearchClick = async () => {
+        const { year, semester, category, detail } = filters;
+        const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}lectures?idx=${detail}`;
+
+        try {
+            const response = await fetch(apiUrl);
+            if (!response.ok) {
+                throw new Error("Failed to fetch lectures");
+            }
+            const data = await response.json();
+            setLectures(data);
+        } catch (error) {
+            console.error("Error fetching lectures:", error, year, semester, category, detail);
+        }
+    };
+
+    // Check if both year and semester are selected
+    const isSearchDisabled = !filters.year || !filters.semester;
+
     const callHandleCartAddClick = (item: LectureItem) => {
         handleCartAddClick(item);
         const cnt = getLocalStorageItemCount("cartItem");
@@ -62,7 +80,22 @@ const DynamicLectureTable = () => {
                 onCategoryChange={handleCategoryChange}
                 onDetailChange={handleDetailChange}
             />
-            <ListView columns={columns} items={lectures} actionType="add" onActionButtonClick={callHandleCartAddClick} />
+
+            <div className="m-2 flex justify-center">
+                <Button onClick={handleSearchClick} color="primary" disabled={isSearchDisabled}>
+                    검색
+                </Button>
+            </div>
+
+            {isSearchDisabled && (
+                <div className="text-gray-500 text-center text-sm my-16 mx-4">
+                    개설년도 및 학기를 선택 후,
+                    <br />
+                    검색 버튼을 눌러 과목을 조회하세요.
+                </div>
+            )}
+            {lectures.length > 0 && <ListView columns={columns} items={lectures} actionType="add" onActionButtonClick={callHandleCartAddClick} />}
+
             <FloatingButton
                 color="danger"
                 icon={<ShoppingBasket size={30} className="m-2 lg:m-4 text-primary" />}

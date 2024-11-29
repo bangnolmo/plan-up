@@ -3,14 +3,18 @@ import { getLocalStorage, setLocalStorage } from "./localStorageManager";
 import { timeTable, timeTalbeList } from "@/app/_configs/commonInfo";
 
 const MAX_TIMETABLES = 10;
+const MIN_TIMETABLES = 2;
 
 /**
  * 초기화 함수: 기본 시간표 초기화
  */
 export const initializeTimeTable = () => {
     const initialTimeTableList: timeTalbeList = {};
-    for (let i = 1; i <= MAX_TIMETABLES; i++) {
-        initialTimeTableList[`timeTable${i}`] = [];
+    for (let i = 1; i <= MIN_TIMETABLES; i++) {
+        initialTimeTableList[`timeTable${i}`] = [{
+            totalGrade: 0,
+            totalTime: [],
+            classItem: [],}];
     }
     setLocalStorage("timeTableList", initialTimeTableList);
 };
@@ -85,7 +89,13 @@ export const createNewTimeTable = (timeTableId: string) => {
         return;
     }
 
-    timeTableData[timeTableId] = [];
+    timeTableData[timeTableId] = [{
+            totalGrade: 0,
+            totalTime: [],
+            classItem: [],
+        
+        },
+    ];
     setLocalStorage("timeTableList", timeTableData);
 };
 

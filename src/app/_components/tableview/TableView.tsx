@@ -1,47 +1,42 @@
 import React, { useEffect, useState } from "react";
-import { getLocalStorage } from "@/utils/localStorageManager";
 import { getClassroomInfo } from "@/utils/locationShortener";
 import { colors } from "@/app/_configs/lectureColumns";
+import { dayDeMapping, LectureItem } from "@/app/_configs/commonInfo";
 
-interface Lecture {
-    sub_num: string;
-    name: string;
-    grade: number;
-    course_type: string;
-    credits: number;
-    professor: string;
-    note: string;
-    period: string;
-    location: string;
-    groupAttribute: number;
-}
 
 interface ParsedLecture {
-    day: string;
+    day: number;
     startPeriod: number;
     endPeriod: number;
     name: string;
     location: string;
 }
 
-const TableView: React.FC = () => {
+interface TableViewProps {
+    timeTableData: LectureItem[];
+}
+
+const TableView: React.FC<TableViewProps> = ( {timeTableData,} ) => {
     const [lectures, setLectures] = useState<ParsedLecture[]>([]);
-    const days = ["월", "화", "수", "목", "금"];
+    const days = [0, 1, 2, 3, 4];
     const periods = Array.from({ length: 8 }, (_, i) => i + 1);
+    
 
     useEffect(() => {
-        const rawData = getLocalStorage("cartItem") as Lecture[] | null;
-        if (rawData) {
-            const parsedLectures = rawData.flatMap((lecture) => {
-                const periodParts = lecture.period.split(" ");
-                const day = periodParts[0];
-                const periods = periodParts.slice(1).map(Number);
+        if (Array.isArray(timeTableData)) {
+            console.log(timeTableData);
+            const parsedLectures = timeTableData.flatMap((lecture: LectureItem) => {
+                // 0 ~ 4 사이의 정수를 기반으로 요일 판별 
+                const day = lecture.classTime ? Math.floor(lecture.classTime[0] / 10) : -1;
+                console.log(day)
+                // classTime 속성을 사용
+                const periods = lecture.classTime as number[];
                 if (periods.length < 1) return [];
                 return [
                     {
                         day,
-                        startPeriod: periods[0],
-                        endPeriod: periods[periods.length - 1],
+                        startPeriod: periods[0] % 10,
+                        endPeriod: periods[periods.length - 1] % 10,
                         name: lecture.name,
                         location: lecture.location,
                     },
@@ -49,9 +44,9 @@ const TableView: React.FC = () => {
             });
             setLectures(parsedLectures);
         }
-    }, []);
+    }, [timeTableData]);
 
-    const getLectureForCell = (day: string, period: number) => {
+    const getLectureForCell = (day: number, period: number) => {
         return lectures.find((lecture) => lecture.day === day && period >= lecture.startPeriod && period <= lecture.endPeriod);
     };
 
@@ -70,7 +65,7 @@ const TableView: React.FC = () => {
                             key={day}
                             className="p-2 text-center text-gray-600 dark:text-gray-200 font-normal border-l border-gray-200 dark:border-gray-600"
                         >
-                            {day}
+                            {dayDeMapping[day as keyof typeof dayDeMapping]}
                         </div>
                     ))}
                     {periods.map((period) => (
@@ -80,9 +75,11 @@ const TableView: React.FC = () => {
                             </div>
                             {days.map((day, index) => {
                                 const lecture = getLectureForCell(day, period);
+                                console.log(lecture);
                                 const isLectureStart = lecture && lecture.startPeriod === period;
                                 const lectureLength = lecture ? lecture.endPeriod - lecture.startPeriod + 1 : 1;
                                 const lectureColor = lecture ? colors[(index + 4) % colors.length] : "";
+                                
 
                                 return isLectureStart ? (
                                     <div

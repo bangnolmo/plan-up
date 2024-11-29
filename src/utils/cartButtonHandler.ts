@@ -5,6 +5,7 @@ import {
     setLocalStorage,
     updateLocalStorageValue,
 } from "@/utils/localStorageManager";
+import { enClassTime } from "./classTimeEnDe";
 
 
 /**
@@ -15,10 +16,12 @@ export const handleCartAddClick = (item: LectureItem) => {
     // 기존 로컬 스토리지에 저장된 데이터를 가져옴
     const existingData = getLocalStorage("cartItem");
     let parsedData: LectureItem[] = [];
+    // 수업시간 정보 -> number[] 형식으로 변형하여 저장
+    const dayInfo = enClassTime(item.period);
 
     const extendedItem = {
         ...item,
-        groupAttribute: 0, // Group 속성추가 (임시)
+        classTime: dayInfo, // Group 속성추가 (임시)
     };
 
     if (!existingData) {

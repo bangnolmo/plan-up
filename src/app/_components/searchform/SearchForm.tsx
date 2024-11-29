@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState } from "react";
 import { Card, CardBody, Tabs, Tab, Button } from "@nextui-org/react";
 import SelectYear from "./SelectYear";
@@ -16,8 +14,9 @@ interface SearchFormProps {
 
 export default function SearchForm({ onYearChange, onSemesterChange, onCategoryChange, onDetailChange }: SearchFormProps) {
     const currentYear = new Date().getFullYear();
-    const [selectedYear, setSelectedYear] = useState(currentYear.toString());
-    const [selectedSemester, setSelectedSemester] = useState("10");
+    const currentMonth = new Date().getMonth() + 1;
+    const [selectedYear, setSelectedYear] = useState<string>(currentYear.toString());
+    const [selectedSemester, setSelectedSemester] = useState<string>(currentMonth <= 6 ? "10" : "20");
     const [category, setCategory] = useState<string>("general");
     const [detail, setDetail] = useState<string>("");
 
@@ -57,7 +56,12 @@ export default function SearchForm({ onYearChange, onSemesterChange, onCategoryC
                             <div className="flex flex-col sm:flex-row gap-4 items-center">
                                 <SelectYear selectedYear={selectedYear} onSelectionChange={handleYearSelectionChange} />
                                 <SelectSemester selectedSemester={selectedSemester} onSelectionChange={handleSemesterSelectionChange} />
-                                <SelectGeneral selectedGeneral={detail} onSelectionChange={handleDetailChange} />
+                                <SelectGeneral
+                                    selectedGeneral={detail}
+                                    onSelectionChange={handleDetailChange}
+                                    year={selectedYear}
+                                    hakgi={selectedSemester}
+                                />
                             </div>
                         </CardBody>
                     </Card>
@@ -68,7 +72,12 @@ export default function SearchForm({ onYearChange, onSemesterChange, onCategoryC
                             <div className="flex flex-col sm:flex-row gap-4 items-center">
                                 <SelectYear selectedYear={selectedYear} onSelectionChange={handleYearSelectionChange} />
                                 <SelectSemester selectedSemester={selectedSemester} onSelectionChange={handleSemesterSelectionChange} />
-                                <SelectMajor selectedMajor={detail} onSelectionChange={handleDetailChange} />
+                                <SelectMajor
+                                    selectedMajor={detail}
+                                    onSelectionChange={handleDetailChange}
+                                    year={selectedYear}
+                                    hakgi={selectedSemester}
+                                />
                             </div>
                         </CardBody>
                     </Card>

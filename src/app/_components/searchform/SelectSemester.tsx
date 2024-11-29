@@ -1,6 +1,4 @@
-"use client";
-
-import React from "react";
+import React, { useEffect } from "react";
 import { Select, SelectItem } from "@nextui-org/react";
 
 interface SelectSemesterProps {
@@ -14,12 +12,23 @@ export default function SelectSemester({ selectedSemester, onSelectionChange }: 
         { label: "2학기", value: "20" },
     ];
 
+    useEffect(() => {
+        const currentMonth = new Date().getMonth() + 1;
+        const defaultSemester = currentMonth <= 6 ? "10" : "20";
+        if (selectedSemester === "") {
+            onSelectionChange(defaultSemester);
+        }
+    }, [selectedSemester, onSelectionChange]);
+
     return (
         <Select
             isRequired
             label="학기 선택"
             value={selectedSemester}
-            onSelectionChange={(value) => onSelectionChange(value as string)}
+            onSelectionChange={(value) => {
+                const stringValue = value?.currentKey;
+                if (stringValue) onSelectionChange(stringValue);
+            }}
             className="max-w-xs"
         >
             {semesters.map((semester) => (

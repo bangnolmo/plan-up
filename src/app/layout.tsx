@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import { Providers } from "./providers";
-// import localFont from "next/font/local";
-
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -13,10 +11,10 @@ export const metadata: Metadata = {
     openGraph: {
         title: "경기대학교 PLANUP",
         description: "시간표를 쉽게 만들어보세요.",
-        url: "http://34.47.112.126/",
+        url: process.env.NEXT_PUBLIC_FRONTEND_URL || "http://planup.duckdns.org",
         images: [
             {
-                url: "http://34.47.112.126/og-image.png",
+                url: `${process.env.NEXT_PUBLIC_FRONTEND_URL}/og-image.png`,
                 alt: "OG-IMAGE",
             },
         ],

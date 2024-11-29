@@ -4,7 +4,7 @@ on:
     push:
         branches:
             - master
-            # - feature/modify-gke-cluster-setting
+            - feature/*
     workflow_dispatch:
 
 env:

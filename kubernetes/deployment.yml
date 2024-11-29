@@ -6,7 +6,7 @@ metadata:
     labels:
         app: nextjs
 spec:
-    replicas: 3
+    replicas: 1 # HPA가 관리하므로 기본값으로 최소 1로 설정
     selector:
         matchLabels:
             app: nextjs
@@ -15,11 +15,29 @@ spec:
             labels:
                 app: nextjs
         spec:
+            affinity:
+                nodeAffinity:
+                    requiredDuringSchedulingIgnoredDuringExecution:
+                        nodeSelectorTerms:
+                            - matchExpressions:
+                                  - key: dedicated
+                                    operator: In
+                                    values:
+                                        - frontend
             containers:
                 - name: nextjs
                   image: heung115/my-nextjs-app:latest
+                  envFrom:
+                      - secretRef:
+                            name: frontend-secrets
+                      - configMapRef:
+                            name: frontend-config
                   ports:
                       - containerPort: 3000
-                  env:
-                      - name: NODE_ENV
-                        value: "production"
+                  resources:
+                      requests:
+                          cpu: "250m"
+                          memory: "256Mi"
+                      limits:
+                          cpu: "500m"
+                          memory: "512Mi"

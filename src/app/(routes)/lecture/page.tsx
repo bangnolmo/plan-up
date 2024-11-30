@@ -2,8 +2,8 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Popover, PopoverTrigger, PopoverContent, Button } from "@nextui-org/react";
-import { handleFloatingCartClick } from "@/utils/cartButtonHandler";
 import FloatingButton from "@/app/_components/FloatingButton";
 import { ShoppingBasket } from "lucide-react";
 import { columns } from "@/app/_configs/lectureColumns";
@@ -11,15 +11,15 @@ import Header from "@/app/_components/Header";
 import PageInfo from "@/app/_components/PageInfo";
 import SearchForm from "@/app/_components/searchform/SearchForm";
 import ListView from "@/app/_components/listview/ListView";
-import { getLocalStorageItemCount } from "@/utils/localStorageManager";
-import { LectureItem } from "@/app/_configs/commonInfo";
+import { Lecture, LocalStorageManager } from "@/utils/localStorageManager";
 import { getSemester, getYear } from "@/utils/defaultSearchParams";
 import AddToCartModal from "@/app/_components/listview/AddToCartModal";
 
 const DynamicLectureTable = () => {
-    const [lectures, setLectures] = useState<LectureItem[] | null>(null);
-    const [cartItemCount, setCartItemCount] = useState(getLocalStorageItemCount("cartItem"));
-    const [selectedLecture, setSelectedLecture] = useState<LectureItem | null>(null);
+    const router = useRouter();
+    const [lectures, setLectures] = useState<Lecture[] | null>(null);
+    const [cartItemCount, setCartItemCount] = useState(LocalStorageManager.getTotalLectureCount());
+    const [selectedLecture, setSelectedLecture] = useState<Lecture | null>(null);
     const [isModalOpen, setModalOpen] = useState(false);
     const [filters, setFilters] = useState({
         year: getYear().toString(),
@@ -60,7 +60,11 @@ const DynamicLectureTable = () => {
         }
     };
 
-    const openModal = (item: LectureItem) => {
+    const handleRouteToCart = () => {
+        router.push("/cart");
+    };
+
+    const openModal = (item: Lecture) => {
         setSelectedLecture(item);
         setModalOpen(true);
     };
@@ -133,7 +137,7 @@ const DynamicLectureTable = () => {
                 color="danger"
                 icon={<ShoppingBasket size={30} className="m-2 lg:m-4 text-primary" />}
                 count={cartItemCount}
-                onPress={handleFloatingCartClick}
+                onPress={handleRouteToCart}
             />
 
             <AddToCartModal isOpen={isModalOpen} onClose={closeModal} selectedLecture={selectedLecture} onCartUpdate={updateCartItemCount} />

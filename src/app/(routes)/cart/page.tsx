@@ -1,146 +1,79 @@
 "use client";
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import ListView from "@/app/_components/listview/ListView";
 import Header from "@/app/_components/Header";
 import PageInfo from "@/app/_components/PageInfo";
-import { handleCartDeleteClick } from "@/utils/cartButtonHandler";
-import { getLocalStorage, setLocalStorage } from "@/utils/localStorageManager";
-//import { addLocalStorageListener } from "@/utils/eventListenerManager";
+import { LocalStorageManager } from "@/utils/localStorageManager";
 import { columns } from "@/app/_configs/lectureColumns";
-import { Groups, LectureItem } from "@/app/_configs/commonInfo";
-import GroupListView from "@/app/_components/groupview/GroupListView";
-import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure, Tabs, Tab, } from "@nextui-org/react";
-import { addGroup, removeGroup, removeLectureFromGroup } from "@/utils/groupManager";
+import { Button } from "@nextui-org/react";
+
+interface GroupWithLectures {
+    groupName: string;
+    lectures: Record<string, string | number>[];
+}
 
 const CartTable = () => {
-    // const [lectures, setLectures] = useState<LectureItem[]>(getLocalStorage("cartItem") as LectureItem[]);
-    const {isOpen, onOpen, onClose} = useDisclosure();
-    const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
-    const lectures = getLocalStorage("cartItem") as LectureItem[];
-    console.log(lectures);
+    const [groupedLectures, setGroupedLectures] = useState<GroupWithLectures[]>([]);
 
-    // useEffect(() => {
-    //     const fetchData = () => {
-    //         const savedLectures = getLocalStorage("cartItem");
-    //         if (Array.isArray(savedLectures)) {
-    //             setLectures(
-    //                 savedLectures.filter((el): el is LectureItem => {
-    //                     return (
-    //                         typeof el === "object" &&
-    //                         el !== null &&
-    //                         !Array.isArray(el) &&
-    //                         "sub_num" in el && // LectureItem의 필드가 모두 있는지 확인
-    //                         typeof el.sub_num === "string" &&
-    //                         Object.values(el).every((value) => typeof value === "string" || typeof value === "number")
-    //                     );
-    //                 })
-    //             );
-    //         } else {
-    //             console.error("로컬 스토리지 데이터가 예상하지 못한 형식입니다.");
-    //         }
-    //     };
+    useEffect(() => {
+        LocalStorageManager.initialize();
 
-    //     fetchData();
+        const fetchData = () => {
+            const groups = LocalStorageManager.getAllGroupsWithLectures();
+            const formattedGroups = groups.map((group) => ({
+                groupName: group.groupName,
+                lectures: group.lectures.map((lecture) => ({
+                    ...lecture,
+                })),
+            }));
+            setGroupedLectures(formattedGroups);
+        };
 
-    //     const unsubscribe = addLocalStorageListener<number>("cartItem", fetchData);
+        fetchData();
+    }, []);
 
-    //     return () => {
-    //         unsubscribe();
-    //     };
-    // }, []);
+    const handleRemoveLecture = (groupName: string, sub_num: string) => {
+        try {
+            LocalStorageManager.removeLectureFromGroup(groupName, sub_num);
 
-    const [groups, setGroups] = useState<Groups>(() => {
-        const cartGroups = getLocalStorage("cartGroups") as Groups | null;
-        return cartGroups || {};
-    });
+            const updatedGroups = LocalStorageManager.getAllGroupsWithLectures();
+            const formattedGroups = updatedGroups.map((group) => ({
+                groupName: group.groupName,
+                lectures: group.lectures.map((lecture) => ({
+                    ...lecture,
+                })),
+            }));
 
-    const callAddGroup = () => {
-        addGroup();
-        const updatedGroups = getLocalStorage("cartGroups") as Groups;
-        setGroups(updatedGroups);
-    };
-
-    const callRemoveGroup = (groupId: string) => {
-        const newGroups = removeGroup(groupId);
-        setGroups(newGroups);
-    };
-
-    const callRemoveLectureFromGroup = (groupId: string, item: LectureItem) => {
-        console.log(groupId);
-        removeLectureFromGroup(groupId, item.sub_num);
-        const updatedGroups = getLocalStorage("cartGroups") as Groups;
-        setGroups(updatedGroups);
-
-    };
-
-    const addLectureToGroup = (groupId: string) => {
-        setSelectedGroupId(groupId);
-        onOpen();
-        
-    };
-
-    const handleAddToGroup = (item: LectureItem) => {
-        if (selectedGroupId) {
-            setGroups((prevGroups) => {
-                const updatedGroups = {
-                    ...prevGroups,
-                    [selectedGroupId]: [...prevGroups[selectedGroupId], item],
-                };
-                setLocalStorage("cartGroups", updatedGroups);
-                return updatedGroups;
-            });
+            setGroupedLectures(formattedGroups);
+        } catch (error) {
+            console.error("아이템 삭제 오류:", error);
         }
     };
 
     return (
         <>
             <Header />
-            <PageInfo title="장바구니" description="장바구니에 담긴 과목을 확인할 수 있어요" />
-            <Tabs>
-                <Tab key="장바구니 목록" title="장바구니 목록">
-                    <ListView columns={columns} items={lectures} actionType="delete" onActionButtonClick={handleCartDeleteClick} />
-                </Tab>
-                <Tab key="그룹 설정" title="그룹 설정">
-                    <GroupListView
-                        groups={groups}
-                        onRemoveGroup={callRemoveGroup}
-                        onActionButtonClick={callRemoveLectureFromGroup}
-                        onGroupClick={addLectureToGroup}
-                    />
-                    <div className="mt-4 flex justify-center">
-                        <Button onClick={callAddGroup}>그룹 추가</Button>
+            <PageInfo title="장바구니" description="장바구니에 담긴 과목을 그룹별로 확인할 수 있어요" />
+            <div className="space-y-8">
+                {groupedLectures.map(({ groupName, lectures }) => (
+                    <div key={groupName}>
+                        <h2 className="text-xl font-bold mb-4">{groupName}</h2>
+                        <ListView columns={columns} items={lectures}>
+                            {(item) => (
+                                <Button
+                                    aria-label="Remove from Cart"
+                                    onClick={() => handleRemoveLecture(groupName, item.sub_num)}
+                                    color="danger"
+                                    size="sm"
+                                >
+                                    삭제
+                                </Button>
+                            )}
+                        </ListView>
                     </div>
-                </Tab>
-            </Tabs>
-           
-
-            <Modal
-                size="5xl"
-                isOpen={isOpen}
-                onClose={onClose}
-                aria-labelledby="modal-title"
-                aria-describedby="modal-description"
-            >
-                <ModalContent>
-                <ModalHeader>
-                    <h3 id="modal-title">{selectedGroupId ? `${selectedGroupId}에 과목 추가` : '과목 추가'}</h3>
-                </ModalHeader>
-                <ModalBody>
-                    <ListView
-                        columns={columns}
-                        items={lectures}
-                        actionType="add"
-                        onActionButtonClick={handleAddToGroup}
-                    />
-                </ModalBody>
-                <ModalFooter>
-                    <Button color="warning" onPress={onClose}>
-                        닫기
-                    </Button>
-                </ModalFooter>
-
-                </ModalContent>
-            </Modal>
+                ))}
+            </div>
         </>
     );
 };

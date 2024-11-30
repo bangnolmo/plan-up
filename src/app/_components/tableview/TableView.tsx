@@ -1,52 +1,43 @@
 import React, { useEffect, useState } from "react";
-import { getClassroomInfo } from "@/utils/locationShortener";
+import { LocalStorageManager } from "@/utils/localStorageManager";
+import { locationShortener } from "@/utils/locationShortener";
 import { colors } from "@/app/_configs/lectureColumns";
-import { dayDeMapping, LectureItem } from "@/app/_configs/commonInfo";
-
 
 interface ParsedLecture {
-    day: number;
+    day: string;
     startPeriod: number;
     endPeriod: number;
     name: string;
     location: string;
 }
 
-interface TableViewProps {
-    timeTableData: LectureItem[];
-}
-
-const TableView: React.FC<TableViewProps> = ( {timeTableData,} ) => {
+const TableView: React.FC = () => {
     const [lectures, setLectures] = useState<ParsedLecture[]>([]);
-    const days = [0, 1, 2, 3, 4];
+    const days = ["월", "화", "수", "목", "금"];
     const periods = Array.from({ length: 8 }, (_, i) => i + 1);
-    
 
     useEffect(() => {
-        if (Array.isArray(timeTableData)) {
-            console.log(timeTableData);
-            const parsedLectures = timeTableData.flatMap((lecture: LectureItem) => {
-                // 0 ~ 4 사이의 정수를 기반으로 요일 판별 
-                const day = lecture.classTime ? Math.floor(lecture.classTime[0] / 10) : -1;
-                console.log(day)
-                // classTime 속성을 사용
-                const periods = lecture.classTime as number[];
+        // LocalStorage에서 모든 강의를 가져옴
+        const rawLectures = LocalStorageManager.getAllLectures(); // 중복 없는 강의 목록
+        if (rawLectures) {
+            const parsedLectures = rawLectures.flatMap((lecture) => {
+                const periodParts = lecture.period.split(" ");
+                const day = periodParts[0];
+                const periods = periodParts.slice(1).map(Number);
                 if (periods.length < 1) return [];
-                return [
-                    {
-                        day,
-                        startPeriod: periods[0] % 10,
-                        endPeriod: periods[periods.length - 1] % 10,
-                        name: lecture.name,
-                        location: lecture.location,
-                    },
-                ];
+                return periods.map((period) => ({
+                    day,
+                    startPeriod: period,
+                    endPeriod: periods[periods.length - 1],
+                    name: lecture.name,
+                    location: lecture.location,
+                }));
             });
             setLectures(parsedLectures);
         }
-    }, [timeTableData]);
+    }, []);
 
-    const getLectureForCell = (day: number, period: number) => {
+    const getLectureForCell = (day: string, period: number) => {
         return lectures.find((lecture) => lecture.day === day && period >= lecture.startPeriod && period <= lecture.endPeriod);
     };
 
@@ -60,7 +51,7 @@ const TableView: React.FC<TableViewProps> = ( {timeTableData,} ) => {
                             key={day}
                             className="p-1 text-sm text-center text-gray-600 dark:text-gray-200 font-normal border-l border-gray-200 dark:border-gray-600"
                         >
-                            {dayDeMapping[day as keyof typeof dayDeMapping]}
+                            {day}
                         </div>
                     ))}
                     {periods.map((period) => (
@@ -70,11 +61,9 @@ const TableView: React.FC<TableViewProps> = ( {timeTableData,} ) => {
                             </div>
                             {days.map((day, index) => {
                                 const lecture = getLectureForCell(day, period);
-                                console.log(lecture);
                                 const isLectureStart = lecture && lecture.startPeriod === period;
                                 const lectureLength = lecture ? lecture.endPeriod - lecture.startPeriod + 1 : 1;
                                 const lectureColor = lecture ? colors[(index + 4) % colors.length] : "";
-                                
 
                                 return isLectureStart ? (
                                     <div
@@ -88,7 +77,7 @@ const TableView: React.FC<TableViewProps> = ( {timeTableData,} ) => {
                                         {lecture && (
                                             <div>
                                                 <div className="text-sm sm:text-md text-white font-semibold">{lecture.name}</div>
-                                                <div className="text-xs sm:text-sm text-white/80 mt-1">{getClassroomInfo(lecture.location)}</div>
+                                                <div className="text-xs sm:text-sm text-white/80 mt-1">{locationShortener(lecture.location)}</div>
                                             </div>
                                         )}
                                     </div>

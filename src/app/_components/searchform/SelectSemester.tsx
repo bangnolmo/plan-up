@@ -22,7 +22,7 @@ export default function SelectSemester({ selectedSemester, onSelectionChange }: 
     return (
         <Select
             isRequired
-            label="학기 선택"
+            label="개설학기"
             value={selectedSemester || getSemester()}
             defaultSelectedKeys={[getSemester()]}
             onSelectionChange={(value) => {

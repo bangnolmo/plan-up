@@ -1,8 +1,9 @@
+// DynamicLectureTable.tsx
 "use client";
 
 import React, { useState } from "react";
 import { Popover, PopoverTrigger, PopoverContent, Button } from "@nextui-org/react";
-import { handleCartAddClick, handleFloatingCartClick } from "@/utils/cartButtonHandler";
+import { handleFloatingCartClick } from "@/utils/cartButtonHandler";
 import FloatingButton from "@/app/_components/FloatingButton";
 import { ShoppingBasket } from "lucide-react";
 import { columns } from "@/app/_configs/lectureColumns";
@@ -13,17 +14,19 @@ import ListView from "@/app/_components/listview/ListView";
 import { getLocalStorageItemCount } from "@/utils/localStorageManager";
 import { LectureItem } from "@/app/_configs/commonInfo";
 import { getSemester, getYear } from "@/utils/defaultSearchParams";
+import AddToCartModal from "@/app/_components/listview/AddToCartModal";
 
 const DynamicLectureTable = () => {
     const [lectures, setLectures] = useState<LectureItem[] | null>(null);
+    const [cartItemCount, setCartItemCount] = useState(getLocalStorageItemCount("cartItem"));
+    const [selectedLecture, setSelectedLecture] = useState<LectureItem | null>(null);
+    const [isModalOpen, setModalOpen] = useState(false);
     const [filters, setFilters] = useState({
         year: getYear().toString(),
         semester: getSemester(),
         category: "",
         detail: "",
     });
-
-    const [cartItemCount, setCartItemCount] = useState(getLocalStorageItemCount("cartItem"));
 
     const handleYearChange = (year: string) => {
         setFilters((prev) => ({ ...prev, year }));
@@ -57,13 +60,20 @@ const DynamicLectureTable = () => {
         }
     };
 
-    const isDetailEmpty = !filters.detail;
-
-    const callHandleCartAddClick = (item: LectureItem) => {
-        handleCartAddClick(item);
-        const cnt = getLocalStorageItemCount("cartItem");
-        setCartItemCount(cnt);
+    const openModal = (item: LectureItem) => {
+        setSelectedLecture(item);
+        setModalOpen(true);
     };
+
+    const closeModal = () => {
+        setModalOpen(false);
+    };
+
+    const updateCartItemCount = (count: number) => {
+        setCartItemCount(count);
+    };
+
+    const isDetailEmpty = !filters.detail;
 
     return (
         <>
@@ -78,7 +88,7 @@ const DynamicLectureTable = () => {
 
             <div className="m-2 flex justify-center">
                 {isDetailEmpty && (
-                    <Popover placement="right">
+                    <Popover placement="top" backdrop="opaque">
                         <PopoverTrigger>
                             <Button onClick={handleSearchClick} color={isDetailEmpty ? "secondary" : "primary"} disabled={isDetailEmpty}>
                                 검색
@@ -93,7 +103,7 @@ const DynamicLectureTable = () => {
                     </Popover>
                 )}
                 {!isDetailEmpty && (
-                    <Button onClick={handleSearchClick} color={isDetailEmpty ? "secondary" : "primary"} disabled={isDetailEmpty}>
+                    <Button onClick={handleSearchClick} color="primary">
                         검색
                     </Button>
                 )}
@@ -108,7 +118,13 @@ const DynamicLectureTable = () => {
             )}
 
             {lectures && lectures.length > 0 && (
-                <ListView columns={columns} items={lectures} actionType="add" onActionButtonClick={callHandleCartAddClick} />
+                <ListView columns={columns} items={lectures}>
+                    {(item) => (
+                        <Button aria-label="Add to Cart" onPress={() => openModal(item)} color="primary" size="sm">
+                            장바구니 추가
+                        </Button>
+                    )}
+                </ListView>
             )}
 
             {!isDetailEmpty && !lectures && <div className="text-center text-sm text-gray-500 my-16">검색 결과가 없습니다.</div>}
@@ -119,6 +135,8 @@ const DynamicLectureTable = () => {
                 count={cartItemCount}
                 onPress={handleFloatingCartClick}
             />
+
+            <AddToCartModal isOpen={isModalOpen} onClose={closeModal} selectedLecture={selectedLecture} onCartUpdate={updateCartItemCount} />
         </>
     );
 };

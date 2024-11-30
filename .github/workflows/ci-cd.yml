@@ -4,7 +4,6 @@ on:
     push:
         branches:
             - master
-            # - feature/*
     workflow_dispatch:
 
 env:
@@ -19,26 +18,14 @@ jobs:
             - name: 코드 체크아웃
               uses: actions/checkout@v3
 
-            - name: Node.js 설정 및 캐시
-              uses: actions/setup-node@v3
-              with:
-                  node-version: "18"
-                  cache: "npm"
-
-            - name: 의존성 설치
-              run: npm ci
-
             - name: Create .env file
               run: |
-                  echo "NEXT_PUBLIC_FRONTEND_URL=${{ secrets.NEXT_PUBLIC_FRONTEND_URL }}" >> .env
+                  echo "NEXT_PUBLIC_FRONTEND_URL=${{ secrets.NEXT_PUBLIC_FRONTEND_URL }}" > .env
                   echo "NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}" >> .env
                   echo "NEXT_PUBLIC_GOOGLE_CLIENT_ID=${{ secrets.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}" >> .env
 
             - name: env 파일 확인
               run: cat .env
-
-            - name: Next.js 빌드
-              run: npm run build
 
             - name: Docker Hub 로그인
               uses: docker/login-action@v2
@@ -63,6 +50,10 @@ jobs:
                   cache-to: type=gha,mode=max
                   build-args: |
                       NODE_ENV=production
+
+            - name: Docker 이미지 환경 변수 확인 (디버깅 용도)
+              run: |
+                  docker run --rm ${{ env.DOCKER_IMAGE }}:latest printenv | grep NEXT_PUBLIC_API_URL
 
     deploy:
         needs: build_and_push

@@ -51,10 +51,6 @@ jobs:
                   build-args: |
                       NODE_ENV=production
 
-            - name: Docker 이미지 환경 변수 확인 (디버깅 용도)
-              run: |
-                  docker run --rm ${{ env.DOCKER_IMAGE }}:latest printenv | grep NEXT_PUBLIC_API_URL
-
     deploy:
         needs: build_and_push
         runs-on: ubuntu-latest

@@ -19,7 +19,6 @@ WORKDIR /app
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/.env .env 
 
 RUN npm install --production
 

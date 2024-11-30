@@ -123,6 +123,10 @@ export default function SelectMajor({ selectedMajor, onSelectionChange, year, ha
             scrollShadowProps={{
                 isEnabled: false,
             }}
+            classNames={{
+                listboxWrapper: "max-h-[24rem]",
+            }}
+            autoFocus
         >
             {Object.entries(groupedMajors).map(([section, majorsInSection]) => (
                 <AutocompleteSection

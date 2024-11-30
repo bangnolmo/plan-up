@@ -123,6 +123,10 @@ export default function SelectGeneral({ selectedGeneral, onSelectionChange, year
             scrollShadowProps={{
                 isEnabled: false,
             }}
+            classNames={{
+                listboxWrapper: "max-h-[24rem]",
+            }}
+            autoFocus
         >
             {Object.entries(groupedGenerals).map(([campus, generalsInCampus]) => (
                 <AutocompleteSection

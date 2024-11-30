@@ -18,7 +18,7 @@ const ListView: React.FC<ListViewProps> = ({ columns, items, actionType = "none"
 
     return (
         <div className="overflow-x-auto">
-            <Table aria-label="Dynamic Table" selectionMode="none">
+            <Table aria-label="Dynamic Table" selectionMode="none" shadow="none">
                 <TableHeader columns={dynamicColumns}>{(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}</TableHeader>
                 <TableBody items={items}>
                     {(item) => (

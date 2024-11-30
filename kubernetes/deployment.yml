@@ -6,7 +6,7 @@ metadata:
     labels:
         app: nextjs
 spec:
-    replicas: 3
+    replicas: 1
     selector:
         matchLabels:
             app: nextjs
@@ -15,11 +15,24 @@ spec:
             labels:
                 app: nextjs
         spec:
+            affinity:
+                nodeAffinity:
+                    requiredDuringSchedulingIgnoredDuringExecution:
+                        nodeSelectorTerms:
+                            - matchExpressions:
+                                  - key: dedicated
+                                    operator: In
+                                    values:
+                                        - frontend
             containers:
                 - name: nextjs
                   image: heung115/my-nextjs-app:latest
                   ports:
                       - containerPort: 3000
-                  env:
-                      - name: NODE_ENV
-                        value: "production"
+                  resources:
+                      requests:
+                          cpu: "100m"
+                          memory: "128Mi"
+                      limits:
+                          cpu: "500m"
+                          memory: "512Mi"

@@ -8,7 +8,6 @@ yarn-error.log
 out
 
 # 환경 파일 (민감 정보 보호)
-.env
 .env.local
 .env.development
 .env.development.local

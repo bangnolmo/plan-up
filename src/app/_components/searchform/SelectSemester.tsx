@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { Select, SelectItem } from "@nextui-org/react";
+import { getSemester } from "@/utils/defaultSearchParams";
 
 interface SelectSemesterProps {
     selectedSemester: string;
@@ -13,23 +14,21 @@ export default function SelectSemester({ selectedSemester, onSelectionChange }: 
     ];
 
     useEffect(() => {
-        const currentMonth = new Date().getMonth() + 1;
-        const defaultSemester = currentMonth <= 6 ? "10" : "20";
         if (selectedSemester === "") {
-            onSelectionChange(defaultSemester);
+            onSelectionChange(getSemester());
         }
     }, [selectedSemester, onSelectionChange]);
 
     return (
         <Select
             isRequired
-            label="학기 선택"
-            value={selectedSemester}
+            label="개설학기"
+            value={selectedSemester || getSemester()}
+            defaultSelectedKeys={[getSemester()]}
             onSelectionChange={(value) => {
                 const stringValue = value?.currentKey;
                 if (stringValue) onSelectionChange(stringValue);
             }}
-            className="max-w-xs"
         >
             {semesters.map((semester) => (
                 <SelectItem key={semester.value} value={semester.value}>

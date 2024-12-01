@@ -1,153 +1,148 @@
-// localStorageManager.ts
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
-// 로컬 스토리지에 저장되는 데이터 타입 정의
-export type LocalStorageValue = string | number | Record<string, unknown> | Array<unknown>;
-export type LectureItem = {
+export interface Lecture {
     sub_num: string;
-    [key: string]: string | number; // sub_num 외에도 다양한 필드를 가질 수 있는 타입
-};
+    name: string;
+    grade: number;
+    course_type: string;
+    credits: number;
+    professor: string;
+    note: string;
+    period: string;
+    location: string;
+    parent_idx: number;
+}
 
-/**
- * 로컬 스토리지 설정 함수
- * @param key 로컬 스토리지의 이름
- * @param value 저장할 값 (string, number, 객체, 배열 등)
- */
-export const setLocalStorage = (key: string, value: LocalStorageValue) => {
-    try {
-        // JSON 문자열로 변환하여 로컬 스토리지에 저장
-        const serializedValue = JSON.stringify(value);
-        localStorage.setItem(key, serializedValue);
+export interface LectureGroup {
+    name: string;
+    lectures: Lecture[];
+}
 
-        // 커스텀 이벤트 디스패치
-        const event = new CustomEvent("localStorageChange", {
-            detail: { key, value },
-        });
-        window.dispatchEvent(event);
-    } catch (error) {
-        console.error("로컬 스토리지 설정 중 오류가 발생했습니다:", error);
-    }
-};
+export class LocalStorageManager {
+    private static storageKey = "lectureGroups";
 
-/**
- * 로컬 스토리지 조회 함수
- * @param key 로컬 스토리지의 이름
- * @returns 로컬 스토리지의 값 (JSON 파싱된 값 또는 null)
- */
-export const getLocalStorage = (key: string): LocalStorageValue | null => {
-    const storageValue = localStorage.getItem(key);
-    if (storageValue) {
+    static initialize(): void {
+        if (typeof window === "undefined") return;
+
         try {
-            // JSON 파싱
-            return JSON.parse(storageValue);
+            const testKey = "__test__";
+            localStorage.setItem(testKey, testKey);
+            localStorage.removeItem(testKey);
         } catch (error) {
-            console.error("로컬 스토리지 데이터 파싱에 실패했습니다. 로컬 스토리지 값:", storageValue, "오류:", error);
-            return null;
+            console.warn("localStorage를 사용할 수 없는 환경입니다.");
+            return;
+        }
+
+        if (!localStorage.getItem(this.storageKey)) {
+            const initialData: LectureGroup[] = [{ name: "Group 1", lectures: [] }];
+            localStorage.setItem(this.storageKey, JSON.stringify(initialData));
         }
     }
-    return null;
-};
 
-/**
- * 로컬 스토리지 삭제 함수
- * @param key 삭제할 로컬 스토리지의 이름
- */
-export const removeLocalStorage = (key: string): void => {
-    try {
-        localStorage.removeItem(key);
-        console.log(`로컬 스토리지 "${key}"가 성공적으로 삭제되었습니다.`);
-    } catch (error) {
-        console.error("로컬 스토리지 삭제 중 오류가 발생했습니다:", error);
+    static getAllGroups(): LectureGroup[] {
+        if (typeof window === "undefined") return [];
+        const data = localStorage.getItem(this.storageKey);
+        return data ? JSON.parse(data) : [];
     }
-};
 
-/**
- * 로컬 스토리지 업데이트 함수
- * @param key 로컬 스토리지의 이름
- * @param updatedValue 업데이트할 값
- */
-export const updateLocalStorageValue = (key: string, updatedValue: LocalStorageValue): void => {
-    try {
-        const existingValue = getLocalStorage(key);
+    static addGroup(groupName: string): void {
+        if (typeof window === "undefined") return;
+        const groups = this.getAllGroups();
+        groups.push({ name: groupName, lectures: [] });
+        localStorage.setItem(this.storageKey, JSON.stringify(groups));
+    }
 
-        // 기존 데이터가 객체일 때만 업데이트 수행
-        if (existingValue && typeof existingValue === "object" && !Array.isArray(existingValue)) {
-            if (typeof updatedValue === "object" && !Array.isArray(updatedValue)) {
-                // 기존 객체와 업데이트 값을 병합하여 새 값을 생성
-                const newValue = {
-                    ...existingValue,
-                    ...updatedValue,
-                };
-                setLocalStorage(key, newValue);
-                console.log(`로컬 스토리지 "${key}"가 성공적으로 업데이트되었습니다.`);
-            } else {
-                console.error("업데이트할 값이 객체가 아닙니다. 업데이트가 수행되지 않았습니다.");
-            }
-        } else {
-            // 기존 값이 없거나 객체가 아닌 경우 새로운 값을 설정
-            setLocalStorage(key, updatedValue);
-            console.log(`로컬 스토리지 "${key}"가 새롭게 생성되었습니다.`);
+    static renameGroup(oldName: string, newName: string): void {
+        if (typeof window === "undefined") return;
+        const groups = this.getAllGroups();
+        const group = groups.find((group) => group.name === oldName);
+
+        if (!group) {
+            throw new Error(`"${oldName}" 그룹을 찾을 수 없습니다.`);
         }
-    } catch (error) {
-        console.error("로컬 스토리지 업데이트 중 오류가 발생했습니다:", error);
-    }
-};
 
-/**
- * 로컬 스토리지에서 특정 항목 삭제 함수
- * @param key 로컬 스토리지의 이름
- * @param sub_num 삭제할 항목의 sub_num
- */
-export const deleteLocalStorageValue = (key: string, sub_num: string | number): void => {
-    try {
-        const existingData = getLocalStorage(key);
-        const parsedData = existingData as LectureItem[];
-
-        // 기존 데이터가 배열일 때만 삭제 작업 수행
-        if (existingData && Array.isArray(existingData)) {
-            // 삭제할 sub_num와 일치하지 않는 요소만 유지하여 새로운 배열 생성
-            const updatedData = parsedData.filter((item: LectureItem) => item.sub_num !== sub_num);
-
-            if (updatedData.length !== existingData.length) {
-                // 기존 배열과 길이가 다르면 업데이트 (즉, 삭제가 이루어진 경우)
-                setLocalStorage(key, updatedData);
-                console.log(`로컬 스토리지 "${key}"에서 sub_num가 "${sub_num}"인 항목이 성공적으로 삭제되었습니다.`);
-            } else {
-                console.log(`로컬 스토리지 "${key}"에 sub_num가 "${sub_num}"인 항목이 존재하지 않습니다.`);
-            }
-        } else {
-            console.error("로컬 스토리지 데이터가 배열 형식이 아니거나 존재하지 않습니다. 삭제가 수행되지 않았습니다.");
+        const nameExists = groups.some((group) => group.name === newName);
+        if (nameExists) {
+            throw new Error(`"${newName}" 이름을 가진 그룹이 이미 존재합니다.`);
         }
-    } catch (error) {
-        console.error("로컬 스토리지에서 값을 삭제하는 중 오류가 발생했습니다:", error);
-    }
-};
 
-/**
- * 로컬 스토리지 내 데이터 개수를 구하는 함수
- * @param key 로컬 스토리지의 이름
- * @returns 로컬 스토리지에 저장된 값의 개수 (배열, 객체, 문자열의 길이 등)
- */
-export const getLocalStorageItemCount = (key: string): number => {
-    const existingData = getLocalStorage(key);
-
-    if (!existingData) {
-        return 0;
+        group.name = newName;
+        localStorage.setItem(this.storageKey, JSON.stringify(groups));
     }
 
-    try {
-        if (Array.isArray(existingData)) {
-            // 데이터가 배열일 경우, 배열의 길이를 반환
-            return existingData.length;
-        } else if (typeof existingData === "object") {
-            // 데이터가 객체일 경우, 객체의 키 개수를 반환
-            return Object.keys(existingData).length;
-        } else if (typeof existingData === "string") {
-            // 데이터가 문자열일 경우, 문자열의 길이를 반환
-            return existingData.length;
+    static removeGroup(groupName: string): void {
+        if (typeof window === "undefined") return;
+        let groups = this.getAllGroups();
+        groups = groups.filter((group) => group.name !== groupName);
+        localStorage.setItem(this.storageKey, JSON.stringify(groups));
+    }
+
+    static addLectureToGroup(groupName: string, lecture: Lecture): void {
+        if (typeof window === "undefined") return;
+        const groups = this.getAllGroups();
+        const group = groups.find((group) => group.name === groupName);
+
+        if (!group) {
+            throw new Error(`"${groupName}" 그룹을 찾을 수 없습니다.`);
         }
-        return 0;
-    } catch (error) {
-        console.error("로컬 스토리지 데이터 개수를 구하는 중 오류가 발생했습니다:", error);
-        return 0;
+
+        const exists = group.lectures.some((l) => l.sub_num === lecture.sub_num);
+        if (exists) {
+            throw new Error(`"${lecture.sub_num}"은 이미 그룹에 저장되어 있습니다.`);
+        }
+
+        group.lectures.push(lecture);
+        localStorage.setItem(this.storageKey, JSON.stringify(groups));
     }
-};
+
+    static removeLectureFromGroup(groupName: string, sub_num: string): void {
+        if (typeof window === "undefined") return;
+        const groups = this.getAllGroups();
+        const group = groups.find((group) => group.name === groupName);
+
+        if (!group) {
+            throw new Error(`"${groupName}" 그룹을 찾을 수 없습니다.`);
+        }
+
+        group.lectures = group.lectures.filter((l) => l.sub_num !== sub_num);
+        localStorage.setItem(this.storageKey, JSON.stringify(groups));
+    }
+
+    static getLectureCountByGroup(groupName: string): number {
+        if (typeof window === "undefined") return 0;
+        const groups = this.getAllGroups();
+        const group = groups.find((group) => group.name === groupName);
+        if (!group) {
+            throw new Error(`"${groupName}" 그룹을 찾을 수 없습니다.`);
+        }
+        return group.lectures.length;
+    }
+
+    static getTotalLectureCount(): number {
+        if (typeof window === "undefined") return 0;
+        const groups = this.getAllGroups();
+        return groups.reduce((total, group) => total + group.lectures.length, 0);
+    }
+
+    static getAllGroupsWithLectures(): { groupName: string; lectures: Lecture[] }[] {
+        if (typeof window === "undefined") return [];
+        const data = localStorage.getItem(this.storageKey);
+        const groups: LectureGroup[] = data ? JSON.parse(data) : [];
+        return groups.map((group) => ({ groupName: group.name, lectures: group.lectures }));
+    }
+
+    static getAllLectures(): Lecture[] {
+        if (typeof window === "undefined") return [];
+        const groups = this.getAllGroups();
+        const allLectures: Lecture[] = [];
+        groups.forEach((group) => {
+            group.lectures.forEach((lecture) => {
+                const exists = allLectures.some((l) => l.sub_num === lecture.sub_num);
+                if (!exists) {
+                    allLectures.push(lecture);
+                }
+            });
+        });
+        return allLectures;
+    }
+}

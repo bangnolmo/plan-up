@@ -52,7 +52,10 @@ export default function SelectMajor({ selectedMajor, onSelectionChange, year, ha
 
     const formatMajorName = (name: string): string => {
         const parts = name.split("-");
-        return parts.slice(3).join(" ");
+        if (parts.length >= 3) {
+            return parts.slice(2).join(" ");
+        }
+        return parts.join(" ");
     };
 
     const groupedMajors = majors.reduce(
@@ -77,7 +80,6 @@ export default function SelectMajor({ selectedMajor, onSelectionChange, year, ha
                 value={selectedMajor}
                 disabledKeys={["loading"]}
                 onSelectionChange={(value) => onSelectionChange(value as string)}
-                className="max-w-xs"
                 scrollShadowProps={{
                     isEnabled: false,
                 }}
@@ -99,7 +101,6 @@ export default function SelectMajor({ selectedMajor, onSelectionChange, year, ha
                 value={selectedMajor}
                 disabledKeys={["error"]}
                 onSelectionChange={(value) => onSelectionChange(value as string)}
-                className="max-w-xs"
                 scrollShadowProps={{
                     isEnabled: false,
                 }}
@@ -119,10 +120,13 @@ export default function SelectMajor({ selectedMajor, onSelectionChange, year, ha
             placeholder="전공을 입력하세요"
             value={selectedMajor}
             onSelectionChange={(value) => onSelectionChange(value as string)}
-            className="max-w-xs"
             scrollShadowProps={{
                 isEnabled: false,
             }}
+            classNames={{
+                listboxWrapper: "max-h-[24rem]",
+            }}
+            autoFocus
         >
             {Object.entries(groupedMajors).map(([section, majorsInSection]) => (
                 <AutocompleteSection

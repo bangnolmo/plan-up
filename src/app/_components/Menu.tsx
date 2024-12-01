@@ -39,7 +39,7 @@ export default function Menu() {
 
             <DropdownItem key="lecture">개설과목 조회</DropdownItem>
 
-            <DropdownItem key="theme-switcher">
+            <DropdownItem key="theme-switcher" shortcut="⌘+D">
                 <ThemeSwitcher />
             </DropdownItem>
         </DropdownMenu>

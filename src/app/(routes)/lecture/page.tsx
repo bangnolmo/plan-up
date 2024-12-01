@@ -1,21 +1,29 @@
+// DynamicLectureTable.tsx
 "use client";
 
-import { useState } from "react";
-import { handleCartAddClick, handleFloatingCartClick } from "@/utils/cartButtonHandler";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Popover, PopoverTrigger, PopoverContent, Button } from "@nextui-org/react";
 import FloatingButton from "@/app/_components/FloatingButton";
-import { ShoppingBasket } from "lucide-react";
+import { CopyPlus, ShoppingBasket } from "lucide-react";
 import { columns } from "@/app/_configs/lectureColumns";
 import Header from "@/app/_components/Header";
 import PageInfo from "@/app/_components/PageInfo";
 import SearchForm from "@/app/_components/searchform/SearchForm";
 import ListView from "@/app/_components/listview/ListView";
-import { Button } from "@nextui-org/react";
+import { Lecture, LocalStorageManager } from "@/utils/localStorageManager";
+import { getSemester, getYear } from "@/utils/defaultSearchParams";
+import AddToCartModal from "@/app/_components/modal/AddToCartModal";
 
 const DynamicLectureTable = () => {
-    const [lectures, setLectures] = useState([]);
+    const router = useRouter();
+    const [lectures, setLectures] = useState<Lecture[] | null>(null);
+    const [cartItemCount, setCartItemCount] = useState(LocalStorageManager.getTotalLectureCount());
+    const [selectedLecture, setSelectedLecture] = useState<Lecture | null>(null);
+    const [isModalOpen, setModalOpen] = useState(false);
     const [filters, setFilters] = useState({
-        year: "",
-        semester: "",
+        year: getYear().toString(),
+        semester: getSemester(),
         category: "",
         detail: "",
     });
@@ -52,8 +60,24 @@ const DynamicLectureTable = () => {
         }
     };
 
-    // Check if both year and semester are selected
-    const isSearchDisabled = !filters.year || !filters.semester;
+    const handleRouteToCart = () => {
+        router.push("/cart");
+    };
+
+    const openModal = (item: Lecture) => {
+        setSelectedLecture(item);
+        setModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setModalOpen(false);
+    };
+
+    const updateCartItemCount = (count: number) => {
+        setCartItemCount(count);
+    };
+
+    const isDetailEmpty = !filters.detail;
 
     return (
         <>
@@ -67,25 +91,56 @@ const DynamicLectureTable = () => {
             />
 
             <div className="m-2 flex justify-center">
-                <Button onClick={handleSearchClick} color="primary" disabled={isSearchDisabled}>
-                    검색
-                </Button>
+                {isDetailEmpty && (
+                    <Popover placement="top" backdrop="opaque">
+                        <PopoverTrigger>
+                            <Button onClick={handleSearchClick} color={isDetailEmpty ? "secondary" : "primary"} disabled={isDetailEmpty}>
+                                검색
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent>
+                            <div className="px-1 py-2">
+                                <div className="text-small font-bold">모든 항목을 채워주세요.</div>
+                                <div className="text-tiny">아직 입력되지 않은 값이 존재합니다.</div>
+                            </div>
+                        </PopoverContent>
+                    </Popover>
+                )}
+                {!isDetailEmpty && (
+                    <Button onClick={handleSearchClick} color="primary">
+                        검색
+                    </Button>
+                )}
             </div>
 
-            {isSearchDisabled && (
+            {isDetailEmpty && (
                 <div className="text-gray-500 text-center text-sm my-16 mx-4">
                     개설년도 및 학기를 선택 후,
                     <br />
                     검색 버튼을 눌러 과목을 조회하세요.
                 </div>
             )}
-            {lectures.length > 0 && <ListView columns={columns} items={lectures} actionType="add" onActionButtonClick={handleCartAddClick} />}
+
+            {lectures && lectures.length > 0 && (
+                <ListView columns={columns} items={lectures}>
+                    {(item) => (
+                        <Button aria-label="Add to Cart" onPress={() => openModal(item)} color="primary" size="sm" variant="solid" isIconOnly>
+                            <CopyPlus size={16} strokeWidth={2} />
+                        </Button>
+                    )}
+                </ListView>
+            )}
+
+            {!isDetailEmpty && !lectures && <div className="text-center text-sm text-gray-500 my-16">검색 결과가 없습니다.</div>}
 
             <FloatingButton
                 color="danger"
                 icon={<ShoppingBasket size={30} className="m-2 lg:m-4 text-primary" />}
-                onPress={handleFloatingCartClick}
+                count={cartItemCount}
+                onPress={handleRouteToCart}
             />
+
+            <AddToCartModal isOpen={isModalOpen} onClose={closeModal} selectedLecture={selectedLecture} onCartUpdate={updateCartItemCount} />
         </>
     );
 };

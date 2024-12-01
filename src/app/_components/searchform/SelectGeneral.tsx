@@ -29,13 +29,13 @@ export default function SelectGeneral({ selectedGeneral, onSelectionChange, year
             try {
                 const response = await fetch(apiUrl);
                 if (!response.ok) {
-                    throw new Error("Failed to fetch general data");
+                    throw new Error("Failed to fetch general data.");
                 }
 
                 const data: General[] = await response.json();
                 setGenerals(data);
             } catch (err) {
-                setError("Failed to load general data");
+                setError("Failed to load general data.");
                 console.log(err);
             } finally {
                 setLoading(false);
@@ -74,13 +74,12 @@ export default function SelectGeneral({ selectedGeneral, onSelectionChange, year
         return (
             <Autocomplete
                 isRequired
-                label="시간대 구분"
-                placeholder="구분을 가져오는 중입니다..."
+                label="교양 선택"
+                placeholder="교양 목록을 가져오는 중입니다..."
                 variant="bordered"
                 value={selectedGeneral}
                 disabledKeys={["loading"]}
                 onSelectionChange={(value) => onSelectionChange(value as string)}
-                className="max-w-xs"
                 scrollShadowProps={{
                     isEnabled: false,
                 }}
@@ -96,13 +95,12 @@ export default function SelectGeneral({ selectedGeneral, onSelectionChange, year
         return (
             <Autocomplete
                 isRequired
-                label="시간대 구분"
-                placeholder="구분을 가져올 수 없습니다."
+                label="교양 선택"
+                placeholder="교양 목록을 가져올 수 없습니다."
                 variant="bordered"
                 value={selectedGeneral}
                 disabledKeys={["error"]}
                 onSelectionChange={(value) => onSelectionChange(value as string)}
-                className="max-w-xs"
                 scrollShadowProps={{
                     isEnabled: false,
                 }}
@@ -117,15 +115,18 @@ export default function SelectGeneral({ selectedGeneral, onSelectionChange, year
     return (
         <Autocomplete
             isRequired
-            label="시간대 구분"
-            placeholder="구분을 입력하세요"
+            label="교양 선택"
+            placeholder="교양을 입력하세요"
             variant="bordered"
             value={selectedGeneral}
             onSelectionChange={(value) => onSelectionChange(value as string)}
-            className="max-w-xs"
             scrollShadowProps={{
                 isEnabled: false,
             }}
+            classNames={{
+                listboxWrapper: "max-h-[24rem]",
+            }}
+            autoFocus
         >
             {Object.entries(groupedGenerals).map(([campus, generalsInCampus]) => (
                 <AutocompleteSection

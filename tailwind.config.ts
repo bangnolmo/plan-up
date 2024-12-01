@@ -13,7 +13,7 @@ export default {
     extend: {
       colors: {
         primary: '#30A46C',
-        secondary: '#218358',
+        secondary: '#8ECEAA',
         lecture: {
           red: '#f87171',
           orange: '#fb923c',

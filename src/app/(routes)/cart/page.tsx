@@ -7,8 +7,10 @@ import PageInfo from "@/app/_components/PageInfo";
 import { LocalStorageManager } from "@/utils/localStorageManager";
 import { columns } from "@/app/_configs/lectureColumns";
 import { Button } from "@nextui-org/react";
-import { Trash2, Edit, X, ShoppingBasket } from "lucide-react";
+import { Trash2, Edit, X, ShoppingBasket, Plus, FolderPlus } from "lucide-react";
 import RenameGroupModal from "@/app/_components/modal/RenameGroupModal";
+import ManualItemModal from "@/app/_components/modal/ManualItemModal";
+import AddGroupModal from "@/app/_components/modal/AddGroupModal";
 
 interface GroupWithLectures {
     groupName: string;
@@ -19,6 +21,8 @@ const CartTable = () => {
     const [groupedLectures, setGroupedLectures] = useState<GroupWithLectures[]>([]);
     const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
     const [editingGroupName, setEditingGroupName] = useState<string>("");
+    const [isManualModalOpen, setIsManualModalOpen] = useState(false);
+    const [isAddGroupModalOpen, setIsAddGroupModalOpen] = useState(false);
 
     useEffect(() => {
         LocalStorageManager.initialize();
@@ -89,6 +93,17 @@ const CartTable = () => {
         setGroupedLectures(updatedGroups); // 상태 업데이트
     };
 
+    const handleUpdateLectures = () => {
+        const updatedGroups = LocalStorageManager.getAllGroupsWithLectures();
+        const formattedGroups = updatedGroups.map((group) => ({
+            groupName: group.groupName,
+            lectures: group.lectures.map((lecture) => ({
+                ...lecture,
+            })),
+        }));
+        setGroupedLectures(formattedGroups);
+    };
+
     return (
         <>
             <Header />
@@ -141,7 +156,33 @@ const CartTable = () => {
                     </div>
                 ))}
             </div>
+            <div className="flex justify-center m-8 gap-2">
+                <Button
+                    aria-label="Add Group"
+                    onClick={() => setIsAddGroupModalOpen(true)}
+                    size="md"
+                    color="primary"
+                    variant="flat"
+                    startContent={<FolderPlus size={20} />}
+                    className="text-green-800 dark:text-green-400"
+                >
+                    그룹 추가
+                </Button>
+                <Button
+                    aria-label="manual add"
+                    onClick={() => setIsManualModalOpen(true)}
+                    size="md"
+                    color="primary"
+                    variant="flat"
+                    startContent={<Plus size={20} />}
+                    className="text-green-800 dark:text-green-400"
+                >
+                    과목 직접 작성하기
+                </Button>
+            </div>
 
+            <AddGroupModal isOpen={isAddGroupModalOpen} onClose={() => setIsAddGroupModalOpen(false)} onChange={handleUpdateLectures} />
+            <ManualItemModal isOpen={isManualModalOpen} onClose={() => setIsManualModalOpen(false)} onItemAdd={handleUpdateLectures} />
             <RenameGroupModal
                 isOpen={isRenameModalOpen}
                 onClose={() => setIsRenameModalOpen(false)}

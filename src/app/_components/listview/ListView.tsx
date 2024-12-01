@@ -32,6 +32,7 @@ const ListView: React.FC<ListViewProps> = ({ columns, items, children }) => {
                     )}
                 </TableBody>
             </Table>
+            {items.length === 0 && <div className="text-sm text-gray-500 text-center py-4">아직 아무것도 추가하지 않았어요.</div>}
         </div>
     );
 };

@@ -22,6 +22,17 @@ export class LocalStorageManager {
     private static storageKey = "lectureGroups";
 
     static initialize(): void {
+        if (typeof window === "undefined") return;
+
+        try {
+            const testKey = "__test__";
+            localStorage.setItem(testKey, testKey);
+            localStorage.removeItem(testKey);
+        } catch (error) {
+            console.warn("localStorage를 사용할 수 없는 환경입니다.");
+            return;
+        }
+
         if (!localStorage.getItem(this.storageKey)) {
             const initialData: LectureGroup[] = [{ name: "Group 1", lectures: [] }];
             localStorage.setItem(this.storageKey, JSON.stringify(initialData));
@@ -29,17 +40,20 @@ export class LocalStorageManager {
     }
 
     static getAllGroups(): LectureGroup[] {
+        if (typeof window === "undefined") return [];
         const data = localStorage.getItem(this.storageKey);
         return data ? JSON.parse(data) : [];
     }
 
     static addGroup(groupName: string): void {
+        if (typeof window === "undefined") return;
         const groups = this.getAllGroups();
         groups.push({ name: groupName, lectures: [] });
         localStorage.setItem(this.storageKey, JSON.stringify(groups));
     }
 
     static renameGroup(oldName: string, newName: string): void {
+        if (typeof window === "undefined") return;
         const groups = this.getAllGroups();
         const group = groups.find((group) => group.name === oldName);
 
@@ -57,12 +71,14 @@ export class LocalStorageManager {
     }
 
     static removeGroup(groupName: string): void {
+        if (typeof window === "undefined") return;
         let groups = this.getAllGroups();
         groups = groups.filter((group) => group.name !== groupName);
         localStorage.setItem(this.storageKey, JSON.stringify(groups));
     }
 
     static addLectureToGroup(groupName: string, lecture: Lecture): void {
+        if (typeof window === "undefined") return;
         const groups = this.getAllGroups();
         const group = groups.find((group) => group.name === groupName);
 
@@ -80,6 +96,7 @@ export class LocalStorageManager {
     }
 
     static removeLectureFromGroup(groupName: string, sub_num: string): void {
+        if (typeof window === "undefined") return;
         const groups = this.getAllGroups();
         const group = groups.find((group) => group.name === groupName);
 
@@ -92,6 +109,7 @@ export class LocalStorageManager {
     }
 
     static getLectureCountByGroup(groupName: string): number {
+        if (typeof window === "undefined") return 0;
         const groups = this.getAllGroups();
         const group = groups.find((group) => group.name === groupName);
         if (!group) {
@@ -101,18 +119,20 @@ export class LocalStorageManager {
     }
 
     static getTotalLectureCount(): number {
+        if (typeof window === "undefined") return 0;
         const groups = this.getAllGroups();
         return groups.reduce((total, group) => total + group.lectures.length, 0);
     }
 
     static getAllGroupsWithLectures(): { groupName: string; lectures: Lecture[] }[] {
+        if (typeof window === "undefined") return [];
         const data = localStorage.getItem(this.storageKey);
         const groups: LectureGroup[] = data ? JSON.parse(data) : [];
         return groups.map((group) => ({ groupName: group.name, lectures: group.lectures }));
     }
 
-    // 시간표 테스트용 메서드
     static getAllLectures(): Lecture[] {
+        if (typeof window === "undefined") return [];
         const groups = this.getAllGroups();
         const allLectures: Lecture[] = [];
         groups.forEach((group) => {

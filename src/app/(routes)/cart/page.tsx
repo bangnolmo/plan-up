@@ -168,15 +168,7 @@ const CartTable = () => {
                 >
                     그룹 추가
                 </Button>
-                <Button
-                    aria-label="manual add"
-                    onClick={() => setIsManualModalOpen(true)}
-                    size="md"
-                    color="primary"
-                    variant="flat"
-                    startContent={<Plus size={20} />}
-                    className="text-green-800 dark:text-green-400"
-                >
+                <Button aria-label="manual add" onClick={() => setIsManualModalOpen(true)} size="md" variant="flat" startContent={<Plus size={20} />}>
                     과목 직접 작성하기
                 </Button>
             </div>

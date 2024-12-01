@@ -2,8 +2,15 @@
 
 import Header from "@/app/_components/Header";
 import PageInfo from "@/app/_components/PageInfo";
+import { CreateTimeTable } from "@/utils/createTimeTable";
+import { LocalStorageManager } from "@/utils/localStorageManager";
 
 const Wizard = () => {
+
+    const testData = LocalStorageManager.getAllGroups();
+    const testResult = CreateTimeTable.getValidCombinations(testData, 23);
+    console.log("생성된 시간표", testResult);
+
     return (
         <>
             <Header />

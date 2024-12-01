@@ -5,13 +5,19 @@ import Header from "@/app/_components/Header";
 import PageInfo from "@/app/_components/PageInfo";
 import TableView from "@/app/_components/tableview/TableView";
 import { Lecture, LocalStorageManager } from "@/utils/localStorageManager";
+import { CreateTimeTable } from "@/utils/createTimeTable";
 
 const TimeTable = () => {
+    
     const [lectures, setLectures] = useState<Lecture[]>([]); // Lecture 타입을 사용
-
+    const testData = LocalStorageManager.getAllGroups();
+    const testResult = CreateTimeTable.getValidCombinations(testData, 23);
+    console.log("생성된 시간표", testResult);
+    
     useEffect(() => {
         // LocalStorage에서 강의 데이터를 가져오기
-        const rawLectures = LocalStorageManager.getAllLectures();
+        // const rawLectures = LocalStorageManager.getAllLectures();
+        const rawLectures = testResult["월금"][0];
         if (rawLectures) {
             const parsedLectures = rawLectures.flatMap((lecture) => {
                 const periodParts = lecture.period.split(" ");

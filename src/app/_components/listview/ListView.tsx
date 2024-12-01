@@ -3,6 +3,7 @@
 "use client";
 import React from "react";
 import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from "@nextui-org/react";
+// import { Lecture } from "@/utils/localStorageManager";
 
 interface ListViewProps {
     columns: { key: string; label: string }[];

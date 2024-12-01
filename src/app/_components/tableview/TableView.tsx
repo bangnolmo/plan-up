@@ -1,50 +1,34 @@
-import React, { useEffect, useState } from "react";
-import { LocalStorageManager } from "@/utils/localStorageManager";
+"use client";
+
+import React from "react";
 import { locationShortener } from "@/utils/locationShortener";
 import { colors } from "@/app/_configs/lectureColumns";
+import { Lecture } from "@/utils/localStorageManager";
+import { parsePeriodToArray } from "@/utils/periodParser";
 
-interface ParsedLecture {
-    day: string;
-    startPeriod: number;
-    endPeriod: number;
-    name: string;
-    location: string;
+interface TableViewProps {
+    items: Lecture[];
 }
 
-const TableView: React.FC = () => {
-    const [lectures, setLectures] = useState<ParsedLecture[]>([]);
+const TableView: React.FC<TableViewProps> = ({ items }) => {
     const days = ["월", "화", "수", "목", "금"];
-    const periods = Array.from({ length: 8 }, (_, i) => i + 1);
-
-    useEffect(() => {
-        // LocalStorage에서 모든 강의를 가져옴
-        const rawLectures = LocalStorageManager.getAllLectures(); // 중복 없는 강의 목록
-        if (rawLectures) {
-            const parsedLectures = rawLectures.flatMap((lecture) => {
-                const periodParts = lecture.period.split(" ");
-                const day = periodParts[0];
-                const periods = periodParts.slice(1).map(Number);
-                if (periods.length < 1) return [];
-                return periods.map((period) => ({
-                    day,
-                    startPeriod: period,
-                    endPeriod: periods[periods.length - 1],
-                    name: lecture.name,
-                    location: lecture.location,
-                }));
-            });
-            setLectures(parsedLectures);
-        }
-    }, []);
+    const periods = Array.from({ length: 10 }, (_, i) => i + 1);
 
     const getLectureForCell = (day: string, period: number) => {
-        return lectures.find((lecture) => lecture.day === day && period >= lecture.startPeriod && period <= lecture.endPeriod);
+        return items.find((lecture) => {
+            const lecturePeriods = parsePeriodToArray(lecture.period);
+            return lecturePeriods.some((p) => {
+                const lectureDay = Math.floor(p / 10);
+                const lecturePeriod = (p % 10) + 1;
+                return days[lectureDay] === day && lecturePeriod === period;
+            });
+        });
     };
 
     return (
         <div className="container mx-auto p-4">
             <div className="overflow-x-auto">
-                <div className="grid grid-cols-[1fr_repeat(5,_3fr)] sm:grid-rows-[1fr_repeat(8,_2fr)] gap-0 p-px border-1 rounded-xl border-gray-200 dark:border-gray-600">
+                <div className="grid grid-cols-[1fr_repeat(5,_3fr)] sm:grid-rows-[1fr_repeat(10,_2fr)] gap-0 p-px border-1 rounded-xl border-gray-200 dark:border-gray-600">
                     <div className="p-2"></div> {/* 코너 셀 */}
                     {days.map((day) => (
                         <div
@@ -61,8 +45,8 @@ const TableView: React.FC = () => {
                             </div>
                             {days.map((day, index) => {
                                 const lecture = getLectureForCell(day, period);
-                                const isLectureStart = lecture && lecture.startPeriod === period;
-                                const lectureLength = lecture ? lecture.endPeriod - lecture.startPeriod + 1 : 1;
+                                const isLectureStart = lecture && (parsePeriodToArray(lecture.period)[0] % 10) + 1 === period;
+                                const lectureLength = lecture ? parsePeriodToArray(lecture.period).length : 1;
                                 const lectureColor = lecture ? colors[(index + 4) % colors.length] : "";
 
                                 return isLectureStart ? (

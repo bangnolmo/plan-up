@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Popover, PopoverTrigger, PopoverContent, Button } from "@nextui-org/react";
 import FloatingButton from "@/app/_components/FloatingButton";
-import { ShoppingBasket } from "lucide-react";
+import { CopyPlus, ShoppingBasket } from "lucide-react";
 import { columns } from "@/app/_configs/lectureColumns";
 import Header from "@/app/_components/Header";
 import PageInfo from "@/app/_components/PageInfo";
@@ -13,7 +13,7 @@ import SearchForm from "@/app/_components/searchform/SearchForm";
 import ListView from "@/app/_components/listview/ListView";
 import { Lecture, LocalStorageManager } from "@/utils/localStorageManager";
 import { getSemester, getYear } from "@/utils/defaultSearchParams";
-import AddToCartModal from "@/app/_components/listview/AddToCartModal";
+import AddToCartModal from "@/app/_components/modal/AddToCartModal";
 
 const DynamicLectureTable = () => {
     const router = useRouter();
@@ -124,8 +124,8 @@ const DynamicLectureTable = () => {
             {lectures && lectures.length > 0 && (
                 <ListView columns={columns} items={lectures}>
                     {(item) => (
-                        <Button aria-label="Add to Cart" onPress={() => openModal(item)} color="primary" size="sm">
-                            장바구니 추가
+                        <Button aria-label="Add to Cart" onPress={() => openModal(item)} color="primary" size="sm" variant="solid" isIconOnly>
+                            <CopyPlus size={16} strokeWidth={2} />
                         </Button>
                     )}
                 </ListView>

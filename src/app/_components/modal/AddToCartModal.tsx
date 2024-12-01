@@ -16,11 +16,11 @@ const AddToCartModal: React.FC<AddToCartModalProps> = ({ isOpen, onClose, select
     const [selectedTab, setSelectedTab] = useState<string>("select-group");
 
     useEffect(() => {
-        LocalStorageManager.initialize(); // 초기화
+        LocalStorageManager.initialize();
         const allGroups = LocalStorageManager.getAllGroups().map((group) => group.name);
         setGroups(allGroups);
         if (allGroups.length > 0) {
-            setSelectedGroup(new Set([allGroups[0]])); // 기본 그룹 선택
+            setSelectedGroup(new Set([allGroups[0]]));
         }
     }, [isOpen]);
 
@@ -29,17 +29,17 @@ const AddToCartModal: React.FC<AddToCartModalProps> = ({ isOpen, onClose, select
             LocalStorageManager.addGroup(newGroupName);
             setGroups((prevGroups) => [...prevGroups, newGroupName]);
             setNewGroupName("");
-            setSelectedTab("select-group"); // 그룹 추가 후 '그룹 선택' 탭으로 돌아가기
+            setSelectedTab("select-group");
         }
     };
 
     const addToGroupAndUpdateCart = () => {
-        const selectedGroupName = Array.from(selectedGroup)[0]; // 선택된 그룹 이름 가져오기
+        const selectedGroupName = Array.from(selectedGroup)[0];
         if (selectedLecture && selectedGroupName) {
             LocalStorageManager.addLectureToGroup(selectedGroupName, selectedLecture);
             const count = LocalStorageManager.getTotalLectureCount();
-            onCartUpdate(count); // 장바구니 수량 업데이트
-            onClose(); // 모달 닫기
+            onCartUpdate(count);
+            onClose();
         }
     };
 

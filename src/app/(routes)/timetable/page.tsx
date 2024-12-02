@@ -5,42 +5,53 @@ import Header from "@/app/_components/Header";
 import PageInfo from "@/app/_components/PageInfo";
 import TableView from "@/app/_components/tableview/TableView";
 import { Lecture, LocalStorageManager } from "@/utils/localStorageManager";
-import { CreateTimeTable } from "@/utils/createTimeTable";
+import { Tabs, Tab } from "@nextui-org/react";
 
 const TimeTable = () => {
-    
-    const [lectures, setLectures] = useState<Lecture[]>([]); // Lecture 타입을 사용
-    const testData = LocalStorageManager.getAllGroups();
-    const testResult = CreateTimeTable.getValidCombinations(testData, 23);
-    console.log("생성된 시간표", testResult);
-    
+    const [timeTables, setTimeTables] = useState<{ tableName: string; lectures: Lecture[] }[]>([]);
+    const [selectedTab, setSelectedTab] = useState<string>("");
+
     useEffect(() => {
-        // LocalStorage에서 강의 데이터를 가져오기
-        // const rawLectures = LocalStorageManager.getAllLectures();
-        const rawLectures = testResult["월금"][0];
-        if (rawLectures) {
-            const parsedLectures = rawLectures.flatMap((lecture) => {
-                const periodParts = lecture.period.split(" ");
-                const day = periodParts[0];
-                const periods = periodParts.slice(1).map(Number);
-                if (periods.length < 1) return [];
-                return periods.map((period) => ({
-                    ...lecture, // 기존 강의 정보도 포함
-                    day,
-                    startPeriod: period,
-                    endPeriod: periods[periods.length - 1],
-                }));
-            });
-            setLectures(parsedLectures); // 상태에 강의 데이터를 설정
+        // LocalStorage에서 저장된 시간표 데이터를 가져오기
+        const storedTimeTables = LocalStorageManager.getAllTimeTableWithLectures();
+        setTimeTables(storedTimeTables);
+        if (storedTimeTables.length > 0) {
+            setSelectedTab(storedTimeTables[0].tableName); // 첫 번째 시간표를 기본 선택
         }
     }, []);
+
+    const handleTabChange = (key: string | number) => {
+        setSelectedTab(String(key));
+    };
+
+    const selectedLectures = timeTables.find((table) => table.tableName === selectedTab)?.lectures || [];
 
     return (
         <>
             <Header />
-            <PageInfo title="시간표" description="시간표를 확인할 수 있어요." />
-            {/* TableView에 lectures 데이터를 전달 */}
-            <TableView items={lectures} />
+            <PageInfo title="내 시간표" description="저장된 시간표를 확인할 수 있어요." />
+            <div style={{ padding: "20px" }}>
+                {timeTables.length > 0 ? (
+                    <Tabs
+                        selectedKey={selectedTab}
+                        onSelectionChange={handleTabChange}
+                        variant="underlined"
+                        size="lg"
+                        color="primary"
+                        className="m-2 mt-0 font-semibold"
+                    >
+                        {timeTables.map((table) => (
+                            <Tab key={table.tableName} title={table.tableName}>
+                                <div style={{ marginTop: "20px" }}>
+                                    <TableView items={selectedLectures} />
+                                </div>
+                            </Tab>
+                        ))}
+                    </Tabs>
+                ) : (
+                    <p>저장된 시간표가 없습니다. 시간표를 먼저 생성해 주세요.</p>
+                )}
+            </div>
         </>
     );
 };

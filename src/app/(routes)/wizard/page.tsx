@@ -24,6 +24,8 @@ const Wizard = () => {
             const testData = LocalStorageManager.getAllGroups();
             const generatedKey = generateKeyFromSelectedDays(selectedDaysOff);
             const testResult = CreateTimeTable.getValidCombinations(testData, 23);
+            console.log(generatedKey);
+            console.log(testResult);
             if (testResult[generatedKey] && testResult[generatedKey].length > 0) {
                 setClassifiedTimeTableData({ [generatedKey]: testResult[generatedKey] });
             } else {
@@ -65,7 +67,7 @@ const Wizard = () => {
     };
 
     const generateKeyFromSelectedDays = (days: string[]): string => {
-        return days.sort().join("");  // 선택된 요일들을 정렬하고 문자열로 연결하여 키 생성
+        return days.sort().reverse().join("");  // 선택된 요일들을 정렬하고 문자열로 연결하여 키 생성
     };
 
     const generatedKey = generateKeyFromSelectedDays(selectedDaysOff);

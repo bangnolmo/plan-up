@@ -21,7 +21,7 @@ const GoogleCallback = () => {
                     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
                     // TODO : 백엔드 명세 바뀌면 oauth/google/login 로 수정 필요
-                    const response = await fetch(`${apiUrl}oauth/google?auth_code=${code}`, {
+                    const response = await fetch(`${apiUrl}oauth/google/login?auth_code=${code}`, {
                         method: "GET",
                     });
 
@@ -56,7 +56,7 @@ const GoogleCallback = () => {
     return (
         <>
             <Header />
-            <PageInfo title="구글 로그인" description="로그인 중..." />
+            <PageInfo title="구글 로그인" description="잠시만 기다려주세요." />
             <div className="flex justify-center items-center">
                 <h3>로그인 처리 중...</h3>
             </div>

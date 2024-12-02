@@ -8,11 +8,16 @@ import { parsePeriodToArray } from "@/utils/periodParser";
 
 interface TableViewProps {
     items: Lecture[];
+    maxRow?: number;
+    maxColumn?: number;
+    cellWidth?: string;
+    cellHeight?: string;
+    isPreview?: boolean; // 미리보기 시 작은 시간표 대응
 }
 
-const TableView: React.FC<TableViewProps> = ({ items }) => {
-    const days = ["월", "화", "수", "목", "금"];
-    const periods = Array.from({ length: 10 }, (_, i) => i + 1);
+const TableView: React.FC<TableViewProps> = ({ items, maxRow = 10, maxColumn = 5, cellHeight = "2fr", cellWidth = "3fr", isPreview = false }) => {
+    const days = ["월", "화", "수", "목", "금"].slice(0, maxColumn);
+    const periods = Array.from({ length: maxRow }, (_, i) => i + 1);
 
     const getLectureForCell = (day: string, period: number) => {
         return items.find((lecture) => {
@@ -26,9 +31,15 @@ const TableView: React.FC<TableViewProps> = ({ items }) => {
     };
 
     return (
-        <div className="container mx-auto p-4">
-            <div className="overflow-x-auto">
-                <div className="grid grid-cols-[1fr_repeat(5,_3fr)] sm:grid-rows-[1fr_repeat(10,_2fr)] gap-0 p-px border-1 rounded-xl border-gray-200 dark:border-gray-600">
+        <div className="container mx-auto">
+            <div className="overflow-x-hidden scrollbar-hide">
+                <div
+                    className="grid gap-0 p-px border-1 rounded-xl border-gray-200 dark:border-gray-600"
+                    style={{
+                        gridTemplateRows: `1fr repeat(${maxRow}, ${cellHeight})`,
+                        gridTemplateColumns: `1fr repeat(${maxColumn}, ${cellWidth})`,
+                    }}
+                >
                     <div className="p-2"></div> {/* 코너 셀 */}
                     {days.map((day) => (
                         <div
@@ -60,8 +71,16 @@ const TableView: React.FC<TableViewProps> = ({ items }) => {
                                     >
                                         {lecture && (
                                             <div>
-                                                <div className="text-sm sm:text-md text-white font-semibold">{lecture.name}</div>
-                                                <div className="text-xs sm:text-sm text-white/80 mt-1">{locationShortener(lecture.location)}</div>
+                                                <div
+                                                    className={`${
+                                                        isPreview ? "text-xs sm:text-sm" : "text-sm sm:text-md"
+                                                    } text-white font-semibold line-clamp-3`}
+                                                >
+                                                    {lecture.name}
+                                                </div>
+                                                {!isPreview && (
+                                                    <div className="text-xs sm:text-sm text-white/80 mt-1">{locationShortener(lecture.location)}</div>
+                                                )}
                                             </div>
                                         )}
                                     </div>

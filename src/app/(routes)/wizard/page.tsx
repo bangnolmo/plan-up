@@ -6,7 +6,21 @@ import TableView from "@/app/_components/tableview/TableView";
 import { CreateTimeTable } from "@/utils/createTimeTable";
 import { Lecture, LocalStorageManager } from "@/utils/localStorageManager";
 import { useEffect, useState } from "react";
-import { Select, SelectItem, Button, Modal, ModalFooter, ModalHeader, ModalBody, ModalContent, Input } from "@nextui-org/react";
+import {
+    Select,
+    SelectItem,
+    Button,
+    Modal,
+    ModalFooter,
+    ModalHeader,
+    ModalBody,
+    ModalContent,
+    Input,
+    Card,
+    CardHeader,
+    CardBody,
+} from "@nextui-org/react";
+import { Table2 } from "lucide-react";
 
 const Wizard = () => {
     const [classifiedTimeTableData, setClassifiedTimeTableData] = useState<{
@@ -25,7 +39,7 @@ const Wizard = () => {
         setClassifiedTimeTableData(testResult);
         console.log(testResult);
     }, []);
-    
+
     const handleDaysOffChange = (values: Set<string>) => {
         setSelectedDaysOff(Array.from(values));
     };
@@ -35,7 +49,7 @@ const Wizard = () => {
         setScheduleName("");
         setIsDuplicate(false);
         setIsDuplicateChecked(false);
-    }
+    };
 
     const handleScheduleClick = (schedule: Lecture[]) => {
         setSelectedSchedule(schedule);
@@ -53,18 +67,18 @@ const Wizard = () => {
     };
 
     const checkDuplicateName = (name: string) => {
-        if(name){
+        if (name) {
             const duplicate = LocalStorageManager.isDupTimeTable(name);
             setIsDuplicate(duplicate);
             setIsDuplicateChecked(true);
         }
     };
 
-    // 필터링된 데이터 가져오기
-    const filteredData = Object.entries(classifiedTimeTableData).filter(([key]) => {
-        // 선택된 요일이 하나라도 포함된 시간표를 필터링
-        return selectedDaysOff.every(day => key.includes(day));
-    }).flatMap(([, value]) => value);
+    const filteredData = Object.entries(classifiedTimeTableData)
+        .filter(([key]) => {
+            return selectedDaysOff.every((day) => key.includes(day));
+        })
+        .flatMap(([, value]) => value);
 
     return (
         <>
@@ -74,33 +88,45 @@ const Wizard = () => {
                 <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", marginBottom: "20px" }}>
                     <div style={{ width: "250px" }}>
                         <Select
-                            label="요일 선택"
-                            placeholder="요일을 선택하세요"
+                            label="공강일 추가"
+                            placeholder="선택하지 않음"
                             selectionMode="multiple"
                             value={selectedDaysOff}
                             onSelectionChange={(values) => handleDaysOffChange(values as Set<string>)}
                         >
-                            <SelectItem key="월" value="월">월요일</SelectItem>
-                            <SelectItem key="화" value="화">화요일</SelectItem>
-                            <SelectItem key="수" value="수">수요일</SelectItem>
-                            <SelectItem key="목" value="목">목요일</SelectItem>
-                            <SelectItem key="금" value="금">금요일</SelectItem>
-                            <SelectItem key="공강 없음" value="공강없음">공강 없음</SelectItem>
+                            <SelectItem key="월" value="월">
+                                월요일
+                            </SelectItem>
+                            <SelectItem key="화" value="화">
+                                화요일
+                            </SelectItem>
+                            <SelectItem key="수" value="수">
+                                수요일
+                            </SelectItem>
+                            <SelectItem key="목" value="목">
+                                목요일
+                            </SelectItem>
+                            <SelectItem key="금" value="금">
+                                금요일
+                            </SelectItem>
                         </Select>
                     </div>
                 </div>
                 <div style={{ marginTop: "20px" }}>
                     <h2 style={{ fontSize: "24px", fontWeight: "bold" }}>총 {filteredData.length}개의 시간표 조합이 생성되었습니다.</h2>
-                    {filteredData.map((schedule, index) => (
-                        <div
-                            key={index}
-                            style={{ marginBottom: "20px", cursor: "pointer" }}
-                            onClick={() => handleScheduleClick(schedule)}
-                        >
-                            <h4 style={{ fontWeight: "bold", fontSize: "18px" }}>시간표 {index + 1}</h4>
-                            <TableView items={schedule} />
-                        </div>
-                    ))}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-6">
+                        {filteredData.map((schedule, index) => (
+                            <Card key={index} onPress={() => handleScheduleClick(schedule)} className="cursor-pointer" isPressable>
+                                <CardHeader className="flex gap-3 text-sm font-semibold pb-1">
+                                    <Table2 size={18} strokeWidth={2.5} />
+                                    시간표 {index + 1}
+                                </CardHeader>
+                                <CardBody>
+                                    <TableView items={schedule} cellHeight="2rem" maxRow={8} isPreview />
+                                </CardBody>
+                            </Card>
+                        ))}
+                    </div>
                 </div>
             </div>
 
@@ -114,16 +140,16 @@ const Wizard = () => {
                 aria-describedby="modal-description"
             >
                 <ModalContent>
-                    <ModalHeader>
-                        나의 시간표에 추가
-                    </ModalHeader>
+                    <ModalHeader>나의 시간표에 추가</ModalHeader>
                     <ModalBody>
-                        <div style={{ 
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "0.5rem",
-                            width: "100%",
-                            marginTop: "1rem", }}
+                        <div
+                            style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "0.5rem",
+                                width: "100%",
+                                marginTop: "1rem",
+                            }}
                         >
                             <Input
                                 label="시간표 이름 설정"
@@ -139,32 +165,17 @@ const Wizard = () => {
                                 중복 확인
                             </Button>
                         </div>
-                        {isDuplicateChecked && (
-                            isDuplicate ? (
-                                <p style={{ color: "red", marginTop: "10px" }}>
-                                    이미 존재하는 이름입니다. 다른 이름을 입력하세요.
-                                </p>
+                        {isDuplicateChecked &&
+                            (isDuplicate ? (
+                                <p style={{ color: "red", marginTop: "10px" }}>이미 존재하는 이름입니다. 다른 이름을 입력하세요.</p>
                             ) : (
-                                <p style={{ color: "green", marginTop: "10px" }}>
-                                    사용 가능한 이름입니다.
-                                </p>
-                            )
-                        )}
-                        {!isDuplicateChecked && (
-                            <p style={{ color: "gray", marginTop: "10px" }}>
-                                중복 확인을 해주세요.
-                            </p>
-                        )}
+                                <p style={{ color: "green", marginTop: "10px" }}>사용 가능한 이름입니다.</p>
+                            ))}
+                        {!isDuplicateChecked && <p style={{ color: "gray", marginTop: "10px" }}>중복 확인을 해주세요.</p>}
                     </ModalBody>
                     <ModalFooter>
-                        <Button onPress={modalClose}>
-                            취소
-                        </Button>
-                        <Button
-                            onPress={saveSchedule}
-                            isDisabled={scheduleName.trim() && isDuplicate || !isDuplicateChecked}
-                            color="primary"
-                        >
+                        <Button onPress={modalClose}>취소</Button>
+                        <Button onPress={saveSchedule} isDisabled={(scheduleName.trim() && isDuplicate) || !isDuplicateChecked} color="primary">
                             확인
                         </Button>
                     </ModalFooter>

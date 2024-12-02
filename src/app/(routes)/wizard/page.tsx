@@ -24,8 +24,8 @@ const Wizard = () => {
             const testData = LocalStorageManager.getAllGroups();
             const generatedKey = generateKeyFromSelectedDays(selectedDaysOff);
             const testResult = CreateTimeTable.getValidCombinations(testData, 23);
-            console.log(generatedKey);
-            console.log(testResult);
+            // console.log(generatedKey);
+            // console.log(testResult);
             if (testResult[generatedKey] && testResult[generatedKey].length > 0) {
                 setClassifiedTimeTableData({ [generatedKey]: testResult[generatedKey] });
             } else {

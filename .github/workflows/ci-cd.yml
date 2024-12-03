@@ -4,7 +4,7 @@ on:
     push:
         branches:
             - master
-            # - feature/modify-gke-cluster-setting
+            # - feature/*
     workflow_dispatch:
 
 env:
@@ -28,7 +28,16 @@ jobs:
             - name: 의존성 설치
               run: npm ci
 
-            - name: Next.js 애플리케이션 빌드
+            - name: Create .env file
+              run: |
+                  echo "NEXT_PUBLIC_FRONTEND_URL=${{ secrets.NEXT_PUBLIC_FRONTEND_URL }}" >> .env
+                  echo "NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}" >> .env
+                  echo "NEXT_PUBLIC_GOOGLE_CLIENT_ID=${{ secrets.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}" >> .env
+
+            - name: env 파일 확인
+              run: cat .env
+
+            - name: Next.js 빌드
               run: npm run build
 
             - name: Docker Hub 로그인

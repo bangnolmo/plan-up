@@ -27,9 +27,9 @@ const RenameGroupModal: React.FC<RenameGroupModalProps> = ({ isOpen, onClose, gr
     return (
         <Modal isOpen={isOpen} onOpenChange={onClose}>
             <ModalContent>
-                <ModalHeader>그룹 이름 수정</ModalHeader>
+                <ModalHeader>그룹명 수정</ModalHeader>
                 <ModalBody>
-                    <Input label="새 그룹 이름" value={newGroupName} onChange={(e) => setNewGroupName(e.target.value)} fullWidth />
+                    <Input label="새 그룹 이름" value={newGroupName} defaultValue={groupName} onChange={(e) => setNewGroupName(e.target.value)} fullWidth />
                 </ModalBody>
                 <ModalFooter>
                     <Button color="default" variant="light" onPress={onClose}>

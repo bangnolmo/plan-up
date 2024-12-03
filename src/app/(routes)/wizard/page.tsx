@@ -21,6 +21,7 @@ import {
     CardBody,
 } from "@nextui-org/react";
 import { Table2 } from "lucide-react";
+import Unavailable from "@/app/_components/Unavailable";
 
 const Wizard = () => {
     const [classifiedTimeTableData, setClassifiedTimeTableData] = useState<{
@@ -80,54 +81,65 @@ const Wizard = () => {
         })
         .flatMap(([, value]) => value);
 
+    const totalLectureCount = LocalStorageManager.getTotalLectureCount();
+
     return (
         <>
             <Header />
             <PageInfo title="시간표 만들기" description="시간표를 만들 수 있어요." />
+
             <div style={{ padding: "20px" }}>
-                <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", marginBottom: "20px" }}>
-                    <div style={{ width: "250px" }}>
-                        <Select
-                            label="공강일 추가"
-                            placeholder="선택하지 않음"
-                            selectionMode="multiple"
-                            value={selectedDaysOff}
-                            onSelectionChange={(values) => handleDaysOffChange(values as Set<string>)}
-                        >
-                            <SelectItem key="월" value="월">
-                                월요일
-                            </SelectItem>
-                            <SelectItem key="화" value="화">
-                                화요일
-                            </SelectItem>
-                            <SelectItem key="수" value="수">
-                                수요일
-                            </SelectItem>
-                            <SelectItem key="목" value="목">
-                                목요일
-                            </SelectItem>
-                            <SelectItem key="금" value="금">
-                                금요일
-                            </SelectItem>
-                        </Select>
-                    </div>
-                </div>
-                <div style={{ marginTop: "20px" }}>
-                    <h2 style={{ fontSize: "24px", fontWeight: "bold" }}>총 {filteredData.length}개의 시간표 조합이 생성되었습니다.</h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-6">
-                        {filteredData.map((schedule, index) => (
-                            <Card key={index} onPress={() => handleScheduleClick(schedule)} className="cursor-pointer" isPressable>
-                                <CardHeader className="flex gap-3 text-sm font-semibold pb-1">
-                                    <Table2 size={18} strokeWidth={2.5} />
-                                    시간표 {index + 1}
-                                </CardHeader>
-                                <CardBody>
-                                    <TableView items={schedule} cellHeight="2rem" maxRow={8} isPreview />
-                                </CardBody>
-                            </Card>
-                        ))}
-                    </div>
-                </div>
+                {totalLectureCount === 0 ? (
+                    <Unavailable buttonText="개설과목 조회" routePath="/lecture">
+                        <p className="text-gray-500 text-sm m-4 mb-8">시간표 마법사를 이용하려면, 먼저 강의를 장바구니에 추가하세요.</p>
+                        </Unavailable>
+                ) : (
+                    <>
+                        <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", marginBottom: "20px" }}>
+                            <div style={{ width: "250px" }}>
+                                <Select
+                                    label="공강일 추가"
+                                    placeholder="선택하지 않음"
+                                    selectionMode="multiple"
+                                    value={selectedDaysOff}
+                                    onSelectionChange={(values) => handleDaysOffChange(values as Set<string>)}
+                                >
+                                    <SelectItem key="월" value="월">
+                                        월요일
+                                    </SelectItem>
+                                    <SelectItem key="화" value="화">
+                                        화요일
+                                    </SelectItem>
+                                    <SelectItem key="수" value="수">
+                                        수요일
+                                    </SelectItem>
+                                    <SelectItem key="목" value="목">
+                                        목요일
+                                    </SelectItem>
+                                    <SelectItem key="금" value="금">
+                                        금요일
+                                    </SelectItem>
+                                </Select>
+                            </div>
+                        </div>
+                        <div style={{ marginTop: "20px" }}>
+                            <h2 style={{ fontSize: "24px", fontWeight: "bold" }}>총 {filteredData.length}개의 시간표 조합이 생성되었습니다.</h2>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-6">
+                                {filteredData.map((schedule, index) => (
+                                    <Card key={index} onPress={() => handleScheduleClick(schedule)} className="cursor-pointer" isPressable>
+                                        <CardHeader className="flex gap-3 text-sm font-semibold p-4 pb-1">
+                                            <Table2 size={18} strokeWidth={2.5} />
+                                            시간표 {index + 1}
+                                        </CardHeader>
+                                        <CardBody>
+                                            <TableView items={schedule} cellHeight="2rem" maxRow={8} isPreview />
+                                        </CardBody>
+                                    </Card>
+                                ))}
+                            </div>
+                        </div>
+                    </>
+                )}
             </div>
 
             <Modal

@@ -6,6 +6,13 @@ import { colors } from "@/app/_configs/lectureColumns";
 import { Lecture } from "@/utils/localStorageManager";
 import { parsePeriodToArray } from "@/utils/periodParser";
 
+// 색상 인덱스를 계산하는 함수
+const getLectureColor = (index: number, classTimes: number[]) => {
+    if (classTimes.length === 0) return colors[index][0] || colors[0][0];
+    const colorIndex = ((classTimes[0] % 10) % 4) % colors[index].length;
+    return colors[index][colorIndex];
+};
+
 interface TableViewProps {
     items: Lecture[];
     maxRow?: number;
@@ -15,7 +22,14 @@ interface TableViewProps {
     isPreview?: boolean; // 미리보기 시 작은 시간표 대응
 }
 
-const TableView: React.FC<TableViewProps> = ({ items, maxRow = 10, maxColumn = 5, cellHeight = "2fr", cellWidth = "3fr", isPreview = false }) => {
+const TableView: React.FC<TableViewProps> = ({
+    items,
+    maxRow = 10,
+    maxColumn = 5,
+    cellHeight = "2fr",
+    cellWidth = "3fr",
+    isPreview = false,
+}) => {
     const days = ["월", "화", "수", "목", "금"].slice(0, maxColumn);
     const periods = Array.from({ length: maxRow }, (_, i) => i + 1);
 
@@ -51,14 +65,16 @@ const TableView: React.FC<TableViewProps> = ({ items, maxRow = 10, maxColumn = 5
                     ))}
                     {periods.map((period) => (
                         <React.Fragment key={period}>
-                            <div className="p-2 text-center text-gray-600 dark:text-gray-200 font-normal border-t border-gray-200 dark:border-gray-600">
+                            <div className="p-2 text-center text-sm text-gray-600 dark:text-gray-200 font-normal border-t border-gray-200 dark:border-gray-600">
                                 {period}
                             </div>
                             {days.map((day, index) => {
                                 const lecture = getLectureForCell(day, period);
                                 const isLectureStart = lecture && (parsePeriodToArray(lecture.period)[0] % 10) + 1 === period;
                                 const lectureLength = lecture ? parsePeriodToArray(lecture.period).length : 1;
-                                const lectureColor = lecture ? colors[(index + 4) % colors.length] : "";
+                                const lectureColor = lecture
+                                    ? getLectureColor(index, lecture.classTime)
+                                    : "";
 
                                 return isLectureStart ? (
                                     <div

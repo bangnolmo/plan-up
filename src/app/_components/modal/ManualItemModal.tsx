@@ -1,3 +1,5 @@
+// do not use
+
 import React, { useState, useEffect } from "react";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input, Select, SelectItem } from "@nextui-org/react";
 import { Lecture, LocalStorageManager } from "@/utils/localStorageManager";
@@ -22,6 +24,7 @@ const ManualItemModal: React.FC<ManualItemModalProps> = ({ isOpen, onClose, onIt
         period: "",
         location: "",
         parent_idx: -1, // 기본값 -1
+        classTime: []
     });
 
     useEffect(() => {

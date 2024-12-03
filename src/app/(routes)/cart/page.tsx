@@ -4,20 +4,22 @@ import { useState, useEffect } from "react";
 import ListView from "@/app/_components/listview/ListView";
 import Header from "@/app/_components/Header";
 import PageInfo from "@/app/_components/PageInfo";
-import { LocalStorageManager } from "@/utils/localStorageManager";
+import { Lecture, LocalStorageManager } from "@/utils/localStorageManager";
+import { useRouter } from "next/navigation";
 import { columns } from "@/app/_configs/lectureColumns";
 import { Button } from "@nextui-org/react";
-import { Trash2, Edit, X, ShoppingBasket, Plus, FolderPlus } from "lucide-react";
+import { Trash2, Edit, X, ShoppingBasket, FolderPlus, Search } from "lucide-react";
 import RenameGroupModal from "@/app/_components/modal/RenameGroupModal";
 import ManualItemModal from "@/app/_components/modal/ManualItemModal";
 import AddGroupModal from "@/app/_components/modal/AddGroupModal";
 
 interface GroupWithLectures {
     groupName: string;
-    lectures: Record<string, string | number>[];
+    lectures: Lecture[];
 }
 
 const CartTable = () => {
+    const router = useRouter();
     const [groupedLectures, setGroupedLectures] = useState<GroupWithLectures[]>([]);
     const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
     const [editingGroupName, setEditingGroupName] = useState<string>("");
@@ -157,6 +159,9 @@ const CartTable = () => {
                 ))}
             </div>
             <div className="flex justify-center m-8 gap-2">
+                <Button aria-label="manual add" onClick={() => router.push('/lecture')} size="md" variant="flat" startContent={<Search size={20} />}>
+                    개설과목 조회
+                </Button>
                 <Button
                     aria-label="Add Group"
                     onClick={() => setIsAddGroupModalOpen(true)}
@@ -167,9 +172,6 @@ const CartTable = () => {
                     className="text-green-800 dark:text-green-400"
                 >
                     그룹 추가
-                </Button>
-                <Button aria-label="manual add" onClick={() => setIsManualModalOpen(true)} size="md" variant="flat" startContent={<Plus size={20} />}>
-                    과목 직접 작성하기
                 </Button>
             </div>
 

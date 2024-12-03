@@ -11,6 +11,7 @@ export interface Lecture {
     period: string;
     location: string;
     parent_idx: number;
+    classTime: number[];
 }
 
 export interface LectureGroup {
@@ -18,8 +19,31 @@ export interface LectureGroup {
     lectures: Lecture[];
 }
 
+export interface TimeTable {
+    name: string;
+    lectures: Lecture[];
+}
+
+// 정수형 배열을 생성하기 맵핑 테이블
+export const dayMappingEn = {
+    월: 0,
+    화: 10,
+    수: 20,
+    목: 30,
+    금: 40,
+};
+
+export const dayMappingDe = {
+    0: '월',
+    1: '화',
+    2: '수',
+    3: '목',
+    4: '금',
+};
+
 export class LocalStorageManager {
     private static storageKey = "lectureGroups";
+    private static storageKeyTimeTable = "TimeTables";
 
     static initialize(): void {
         if (typeof window === "undefined") return;
@@ -45,11 +69,40 @@ export class LocalStorageManager {
         return data ? JSON.parse(data) : [];
     }
 
+    static getAllTimeTables(): TimeTable[] {
+        if (typeof window === "undefined") return [];
+        const data = localStorage.getItem(this.storageKeyTimeTable);
+        return data ? JSON.parse(data) : [];
+    }
+
     static addGroup(groupName: string): void {
         if (typeof window === "undefined") return;
         const groups = this.getAllGroups();
+        if (groups.length > 9) {
+            throw new Error(`그룹은 최대 10개까지 생성 가능합니다.`);
+        }
         groups.push({ name: groupName, lectures: [] });
         localStorage.setItem(this.storageKey, JSON.stringify(groups));
+    }
+
+    static addTimeTable(timeTableName: string): void {
+        if (typeof window === "undefined") return;
+        const timeTables = this.getAllTimeTables();
+        if (timeTables.length > 9) {
+            throw new Error(`시간표는 최대 10개까지 생성 가능합니다.`);
+        }
+        timeTables.push({ name: timeTableName, lectures: [] });
+        localStorage.setItem(this.storageKeyTimeTable, JSON.stringify(timeTables));
+    }
+
+    static addTimeTableCombi(timeTableName: string, lectures:Lecture[] ): void {
+        if (typeof window === "undefined") return;
+        const timeTables = this.getAllTimeTables();
+        if (timeTables.length > 9) {
+            throw new Error(`시간표는 최대 10개까지 생성 가능합니다.`);
+        }
+        timeTables.push({ name: timeTableName, lectures: lectures });
+        localStorage.setItem(this.storageKeyTimeTable, JSON.stringify(timeTables));
     }
 
     static renameGroup(oldName: string, newName: string): void {
@@ -70,6 +123,33 @@ export class LocalStorageManager {
         localStorage.setItem(this.storageKey, JSON.stringify(groups));
     }
 
+    static renameTimeTalbe(oldName: string, newName: string): void {
+        if (typeof window === "undefined") return;
+        const timeTables = this.getAllTimeTables();
+        const tables = timeTables.find((tTable) => tTable.name === oldName);
+
+        if (!tables) {
+            throw new Error(`"${oldName}" 시간표를 찾을 수 없습니다.`);
+        }
+
+        const nameExists = timeTables.some((tTable) => tTable.name === newName);
+        if (nameExists) {
+            throw new Error(`"${newName}" 이름을 가진 시간표가 이미 존재합니다.`);
+        }
+
+        tables.name = newName;
+        localStorage.setItem(this.storageKeyTimeTable, JSON.stringify(timeTables));
+    }
+
+    static isDupTimeTable(newName: string): boolean {
+        const timeTables = this.getAllTimeTables();
+        const nameExists = timeTables.some((tTable) => tTable.name === newName);
+        if (nameExists) {
+            throw new Error(`"${newName}" 이름을 가진 시간표가 이미 존재합니다.`);
+        }
+        return nameExists;
+    }
+
     static removeGroup(groupName: string): void {
         if (typeof window === "undefined") return;
         let groups = this.getAllGroups();
@@ -77,21 +157,36 @@ export class LocalStorageManager {
         localStorage.setItem(this.storageKey, JSON.stringify(groups));
     }
 
+    static removeTimeTable(tableName: string): void {
+        if (typeof window === "undefined") return;
+        let tables = this.getAllTimeTables();
+        tables = tables.filter((tTable) => tTable.name !== tableName);
+        localStorage.setItem(this.storageKeyTimeTable, JSON.stringify(tables));
+    }
+
     static addLectureToGroup(groupName: string, lecture: Lecture): void {
         if (typeof window === "undefined") return;
         const groups = this.getAllGroups();
+        const groupsAllLecture = this.getAllLectures();
         const group = groups.find((group) => group.name === groupName);
 
         if (!group) {
             throw new Error(`"${groupName}" 그룹을 찾을 수 없습니다.`);
         }
 
-        const exists = group.lectures.some((l) => l.sub_num === lecture.sub_num);
+        //중복체크 전체 그룹 내 과목으로 체크하도록 로직 수정
+        const exists = groupsAllLecture.some((l: Lecture) => l.sub_num === lecture.sub_num);
         if (exists) {
             throw new Error(`"${lecture.sub_num}"은 이미 그룹에 저장되어 있습니다.`);
         }
 
-        group.lectures.push(lecture);
+        // 정수배열을 위해 수정
+        const extendedLecture = {
+            ...lecture,
+            classTime: enClassTime(lecture.period),
+        };
+        // 수정된 값을 저장
+        group.lectures.push(extendedLecture);
         localStorage.setItem(this.storageKey, JSON.stringify(groups));
     }
 
@@ -118,6 +213,16 @@ export class LocalStorageManager {
         return group.lectures.length;
     }
 
+    static getTimeTableCountByGroup(tableName: string): number {
+        if (typeof window === "undefined") return 0;
+        const tables = this.getAllTimeTables();
+        const table = tables.find((tTable) => tTable.name === tableName);
+        if (!table) {
+            throw new Error(`"${tableName}" 시간표를 찾을 수 없습니다.`);
+        }
+        return table.lectures.length;
+    }
+
     static getTotalLectureCount(): number {
         if (typeof window === "undefined") return 0;
         const groups = this.getAllGroups();
@@ -129,6 +234,13 @@ export class LocalStorageManager {
         const data = localStorage.getItem(this.storageKey);
         const groups: LectureGroup[] = data ? JSON.parse(data) : [];
         return groups.map((group) => ({ groupName: group.name, lectures: group.lectures }));
+    }
+
+    static getAllTimeTableWithLectures(): { tableName: string; lectures: Lecture[] }[] {
+        if (typeof window === "undefined") return [];
+        const data = localStorage.getItem(this.storageKeyTimeTable);
+        const tables: LectureGroup[] = data ? JSON.parse(data) : [];
+        return tables.map((table) => ({ tableName: table.name, lectures: table.lectures }));
     }
 
     static getAllLectures(): Lecture[] {
@@ -146,3 +258,18 @@ export class LocalStorageManager {
         return allLectures;
     }
 }
+
+// "월 1 2 3" 처럼 되어있는 문자열 데이터를 정수형 데이터로 인코딩
+export const enClassTime = (classTimeInfo: string): number[] => {
+    const dayInfo = classTimeInfo.split(" ");
+    if (dayInfo.length <= 1){
+        const exception = [-1]
+        return exception;
+    }else{
+        const day = dayMappingEn[dayInfo[0] as keyof typeof dayMappingEn];
+        const encodingTimeInfo = dayInfo.slice(1).map((value) => day + parseInt(value));
+        return encodingTimeInfo;
+    }
+    
+};
+

@@ -7,6 +7,18 @@ import { useRouter } from "next/navigation";
 import Header from "@/app/_components/Header";
 import PageInfo from "@/app/_components/PageInfo";
 
+const localStorageCheck = () => {
+    try {
+        const testKey = "__test__";
+        localStorage.setItem(testKey, testKey);
+        localStorage.removeItem(testKey);
+        return true;
+    } catch (err) {
+        console.log(err, "can not use local storage");
+        return false;
+    }
+};
+
 // GoogleCallback 컴포넌트
 const GoogleCallback = () => {
     const searchParams = useSearchParams();
@@ -20,8 +32,7 @@ const GoogleCallback = () => {
                 try {
                     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-                    // TODO : 백엔드 명세 바뀌면 oauth/google/login 로 수정 필요
-                    const response = await fetch(`${apiUrl}oauth/google?auth_code=${code}`, {
+                    const response = await fetch(`${apiUrl}oauth/google/login?auth_code=${code}`, {
                         method: "GET",
                     });
 
@@ -36,6 +47,15 @@ const GoogleCallback = () => {
                     const data = await response.json();
 
                     if (data.access_token) {
+                        if (localStorageCheck()) {
+                            localStorage.setItem("access_token", data.access_token);
+                            localStorage.setItem("refresh_token", data.refresh_token);
+                            localStorage.setItem("user_email", data.user_email);
+                        } else {
+                            console.error("로컬 스토리지 사용 불가능");
+                            alert("로컬 스토리지가 사용 불가능한 환경입니다.");
+                        }
+
                         router.push("/");
                     } else {
                         console.error("로그인 실패: 액세스 토큰 없음");
@@ -56,7 +76,7 @@ const GoogleCallback = () => {
     return (
         <>
             <Header />
-            <PageInfo title="구글 로그인" description="로그인 중..." />
+            <PageInfo title="구글 로그인" description="잠시만 기다려주세요." />
             <div className="flex justify-center items-center">
                 <h3>로그인 처리 중...</h3>
             </div>
@@ -64,7 +84,6 @@ const GoogleCallback = () => {
     );
 };
 
-// Suspense Boundary로 페이지 전체를 감싸기
 export default function SuspenseWrapper() {
     return (
         <Suspense fallback={<div>로딩 중...</div>}>

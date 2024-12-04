@@ -8,9 +8,9 @@ import Unavailable from "@/app/_components/Unavailable";
 import { CreateTimeTable } from "@/utils/createTimeTable";
 import { Lecture, LocalStorageManager } from "@/utils/localStorageManager";
 import { columns } from "@/app/_configs/timetableColumns";
-import { Table2 } from "lucide-react";
+import { PencilRuler, SwatchBook, Table2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Select, SelectItem, Card, CardHeader, CardBody } from "@nextui-org/react";
+import { Select, SelectItem, Card, CardHeader, CardBody, Button } from "@nextui-org/react";
 import CreateTimetableModal from "@/app/_components/modal/CreateTimetableModal";
 import { removeLocalUserData, validateUserEmail } from "@/utils/apis/login";
 
@@ -127,6 +127,28 @@ const Wizard = () => {
                                     ))}
                                 </div>
                             )}
+                        </div>
+                        <div className="flex justify-center m-8 gap-2">
+                            <Button
+                                aria-label="d"
+                                onClick={() => router.push("/wizard/theme")}
+                                size="md"
+                                variant="flat"
+                                color="primary"
+                                startContent={<SwatchBook size={20} />}
+                                className="text-green-800 dark:text-green-400"
+                            >
+                                테마별 추천
+                            </Button>
+                            <Button
+                                aria-label="d"
+                                onClick={() => router.push("/wizard/precise")}
+                                size="md"
+                                variant="flat"
+                                startContent={<PencilRuler size={20} />}
+                            >
+                                맞춤형 시간표
+                            </Button>
                         </div>
                     </>
                 )}

@@ -22,7 +22,7 @@ const MyPage = () => {
             return;
         }
 
-        setUserEmail(userEmail); // 로컬 스토리지에서 이메일을 가져와서 state에 저장
+        setUserEmail(userEmail);
 
         const checkUserValidity = async () => {
             try {

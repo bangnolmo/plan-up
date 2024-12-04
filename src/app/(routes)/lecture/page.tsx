@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Popover, PopoverTrigger, PopoverContent, Button } from "@nextui-org/react";
 import FloatingButton from "@/app/_components/FloatingButton";
@@ -15,6 +15,7 @@ import AddToCartModal from "@/app/_components/modal/AddToCartModal";
 import { Lecture, LocalStorageManager } from "@/utils/localStorageManager";
 import { getSemester, getYear } from "@/utils/defaultSearchParams";
 import { fetchLectures } from "@/utils/apis/lecture";
+import { removeLocalUserData, validateUserEmail } from "@/utils/apis/login";
 
 const DynamicLectureTable = () => {
     const router = useRouter();
@@ -28,6 +29,34 @@ const DynamicLectureTable = () => {
         category: "",
         detail: "",
     });
+
+    useEffect(() => {
+        if (typeof window === "undefined") return;
+        const accessToken = localStorage.getItem("access_token");
+        const userEmail = localStorage.getItem("user_email");
+
+        if (!accessToken || !userEmail) {
+            router.push("/login");
+            return;
+        }
+
+        const checkUserValidity = async () => {
+            try {
+                const { auth } = await validateUserEmail(accessToken, userEmail);
+
+                if (!auth) {
+                    removeLocalUserData();
+                    router.push("/login");
+                }
+            } catch (error) {
+                console.error("User validation failed:", error);
+                alert("접속 후 오랜 시간이 경과되어 다시 로그인해야 합니다.");
+                removeLocalUserData();
+                router.push("/login");
+            }
+        };
+        checkUserValidity();
+    }, [router]);
 
     const handleYearChange = (year: string) => {
         setFilters((prev) => ({ ...prev, year }));

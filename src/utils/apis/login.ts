@@ -33,7 +33,7 @@ export const validateUserEmail = async (access_token: string, user_email: string
         const response = await fetch(`${apiUrl}oauth/google/auth?email=${user_email}`, {
             method: "GET",
             headers: {
-                auth: `Bearer ${access_token}`,
+                Authorization: `Bearer ${access_token}`,
             },
         });
 
@@ -49,4 +49,12 @@ export const validateUserEmail = async (access_token: string, user_email: string
         console.error("Validation Failed: ", error);
         throw new Error("유효성 검사 중 오류가 발생했습니다.");
     }
+};
+
+export const removeLocalUserData = (): void => {
+    if (typeof window === "undefined") return;
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("user_email");
+    // window.location.href = "/login";
+    // Router 사용
 };

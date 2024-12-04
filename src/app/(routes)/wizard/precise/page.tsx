@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -43,13 +44,6 @@ const Wizard = () => {
 
     const handleRoute = () => {
         router.push("/timetable");
-    };
-
-    const getRandomSchedules = (schedules: Lecture[][], count: number) => {
-        if (schedules.length <= count) return schedules;
-
-        const shuffled = [...schedules].sort(() => 0.5 - Math.random());
-        return shuffled.slice(0, count);
     };
 
     return (

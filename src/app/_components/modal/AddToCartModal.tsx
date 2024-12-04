@@ -24,7 +24,7 @@ const AddToCartModal: React.FC<AddToCartModalProps> = ({ isOpen, onClose, select
         }
     }, [isOpen]);
 
-    const handleAddGroup = () => {
+    const handleCreateGroup = () => {
         if (newGroupName.trim() && !groups.includes(newGroupName)) {
             LocalStorageManager.addGroup(newGroupName);
             setGroups((prevGroups) => [...prevGroups, newGroupName]);
@@ -81,7 +81,7 @@ const AddToCartModal: React.FC<AddToCartModalProps> = ({ isOpen, onClose, select
                                     value={newGroupName}
                                     onChange={(e) => setNewGroupName(e.target.value)}
                                 />
-                                <Button color="primary" onPress={handleAddGroup}>
+                                <Button color="primary" onPress={handleCreateGroup}>
                                     그룹 추가
                                 </Button>
                             </div>

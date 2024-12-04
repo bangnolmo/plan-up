@@ -1,4 +1,4 @@
-// DynamicLectureTable.tsx
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useState } from "react";
@@ -11,9 +11,10 @@ import Header from "@/app/_components/Header";
 import PageInfo from "@/app/_components/PageInfo";
 import SearchForm from "@/app/_components/searchform/SearchForm";
 import ListView from "@/app/_components/listview/ListView";
+import AddToCartModal from "@/app/_components/modal/AddToCartModal";
 import { Lecture, LocalStorageManager } from "@/utils/localStorageManager";
 import { getSemester, getYear } from "@/utils/defaultSearchParams";
-import AddToCartModal from "@/app/_components/modal/AddToCartModal";
+import { fetchLectures } from "@/utils/apis/lecture";
 
 const DynamicLectureTable = () => {
     const router = useRouter();
@@ -46,14 +47,9 @@ const DynamicLectureTable = () => {
 
     const handleSearchClick = async () => {
         const { year, semester, category, detail } = filters;
-        const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}lectures?idx=${detail}`;
 
         try {
-            const response = await fetch(apiUrl);
-            if (!response.ok) {
-                throw new Error("Failed to fetch lectures");
-            }
-            const data = await response.json();
+            const data = await fetchLectures(detail); // 여기서 API 요청 처리
             setLectures(data);
         } catch (error) {
             console.error("Error fetching lectures:", error, year, semester, category, detail);

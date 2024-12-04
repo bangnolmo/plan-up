@@ -16,7 +16,12 @@ const Login = () => {
             <div className="flex justify-center items-center mt-16">
                 <Card className="max-w-full w-[340px]">
                     <CardBody className="overflow-hidden flex flex-col justify-center items-center">
-                        <Button fullWidth className="bg-white" startContent={<GoogleIcon />} onPress={() => (window.location.href = googleAuthUrl)}>
+                        <Button
+                            fullWidth
+                            className="bg-white dark:bg-[#18181b]"
+                            startContent={<GoogleIcon />}
+                            onPress={() => (window.location.href = googleAuthUrl)}
+                        >
                             Google 로그인
                         </Button>
                     </CardBody>

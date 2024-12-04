@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { getSemester, getYear } from "../defaultSearchParams";
 import { Lecture } from "../localStorageManager";
 
 // 시간표 생성
@@ -23,8 +24,8 @@ export const createTimeTable = async (scheduleName: string): Promise<any> => {
             },
             body: JSON.stringify({
                 name: scheduleName,
-                year: 2024,
-                semester: 2,
+                year: Number(getYear()),
+                semester: Number(getSemester()),
                 owner: storedEmail,
             }),
         });

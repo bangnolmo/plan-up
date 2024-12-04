@@ -150,9 +150,11 @@ const Wizard = () => {
                                         클릭하여 제외할 시간을 선택하세요. 선택된 시간은 과목 배치에서 제외됩니다.
                                     </p>
                                     <NonogramTable onActiveCellsChange={handleNonogramCellsChange} />
-                                    <Button className="mt-4" color="primary" onPress={handleGenerateSchedules}>
+                                    <div style={{ marginTop: "20px", textAlign: "center" }}>
+                                        <Button className="mt-4" color="primary" onPress={handleGenerateSchedules}>
                                         조회
-                                    </Button>
+                                        </Button>
+                                    </div>
                                 </>
                             ) : (
                                 <>

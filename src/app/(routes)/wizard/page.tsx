@@ -12,6 +12,7 @@ import { Table2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Select, SelectItem, Card, CardHeader, CardBody } from "@nextui-org/react";
 import CreateTimetableModal from "@/app/_components/modal/CreateTimetableModal";
+import { removeLocalUserData, validateUserEmail } from "@/utils/apis/login";
 
 const Wizard = () => {
     const router = useRouter();
@@ -27,6 +28,34 @@ const Wizard = () => {
         const testResult = CreateTimeTable.getValidCombinations(testData, 23);
         setClassifiedTimeTableData(testResult);
     }, []);
+
+    useEffect(() => {
+        if (typeof window === "undefined") return;
+        const accessToken = localStorage.getItem("access_token");
+        const userEmail = localStorage.getItem("user_email");
+
+        if (!accessToken || !userEmail) {
+            router.push("/login");
+            return;
+        }
+
+        const checkUserValidity = async () => {
+            try {
+                const { auth } = await validateUserEmail(accessToken, userEmail);
+
+                if (!auth) {
+                    removeLocalUserData();
+                    router.push("/login");
+                }
+            } catch (error) {
+                console.error("User validation failed:", error);
+                alert("접속 후 오랜 시간이 경과되어 다시 로그인해야 합니다.");
+                removeLocalUserData();
+                router.push("/login");
+            }
+        };
+        checkUserValidity();
+    }, [router]);
 
     const handleDaysOffChange = (values: Set<string>) => {
         setSelectedDaysOff(Array.from(values));

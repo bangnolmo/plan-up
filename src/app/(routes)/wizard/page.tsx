@@ -5,6 +5,7 @@ import PageInfo from "@/app/_components/PageInfo";
 import TableView from "@/app/_components/tableview/TableView";
 import { CreateTimeTable } from "@/utils/createTimeTable";
 import { Lecture, LocalStorageManager } from "@/utils/localStorageManager";
+import { columns } from "@/app/_configs/timetableColumns";
 import { useEffect, useState } from "react";
 import {
     Select,
@@ -58,7 +59,6 @@ const Wizard = () => {
     };
 
     const saveSchedule = () => {
-        // 시간표 저장 로직 구현
         console.log("Selected Schedule:", selectedSchedule);
         console.log("Schedule Name:", scheduleName);
         if (selectedSchedule) {
@@ -86,57 +86,52 @@ const Wizard = () => {
     return (
         <>
             <Header />
-            <PageInfo title="시간표 만들기" description="시간표를 만들 수 있어요." />
+            <PageInfo title="시간표 만들기" description="시간표 마법사를 통해 시간표를 빠르게 조합해보세요." />
 
-            <div style={{ padding: "20px" }}>
+            <div className="p-5">
                 {totalLectureCount === 0 ? (
                     <Unavailable buttonText="개설과목 조회" routePath="/lecture">
                         <p className="text-gray-500 text-sm m-4 mb-8">시간표 마법사를 이용하려면, 먼저 강의를 장바구니에 추가하세요.</p>
-                        </Unavailable>
+                    </Unavailable>
                 ) : (
                     <>
-                        <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", marginBottom: "20px" }}>
-                            <div style={{ width: "250px" }}>
-                                <Select
-                                    label="공강일 추가"
-                                    placeholder="선택하지 않음"
-                                    selectionMode="multiple"
-                                    value={selectedDaysOff}
-                                    onSelectionChange={(values) => handleDaysOffChange(values as Set<string>)}
-                                >
-                                    <SelectItem key="월" value="월">
-                                        월요일
-                                    </SelectItem>
-                                    <SelectItem key="화" value="화">
-                                        화요일
-                                    </SelectItem>
-                                    <SelectItem key="수" value="수">
-                                        수요일
-                                    </SelectItem>
-                                    <SelectItem key="목" value="목">
-                                        목요일
-                                    </SelectItem>
-                                    <SelectItem key="금" value="금">
-                                        금요일
-                                    </SelectItem>
-                                </Select>
-                            </div>
+                        <div className="flex justify-end items-center mb-5">
+                            <Select
+                                items={columns}
+                                selectionMode="multiple"
+                                label="공강일 선택"
+                                placeholder="공강 요일을 추가하세요"
+                                className="max-w-60"
+                                onSelectionChange={(values) => handleDaysOffChange(values as Set<string>)}
+                            >
+                                {(column) => <SelectItem key={column.key}>{column.label}</SelectItem>}
+                            </Select>
                         </div>
-                        <div style={{ marginTop: "20px" }}>
-                            <h2 style={{ fontSize: "24px", fontWeight: "bold" }}>총 {filteredData.length}개의 시간표 조합이 생성되었습니다.</h2>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-6">
-                                {filteredData.map((schedule, index) => (
-                                    <Card key={index} onPress={() => handleScheduleClick(schedule)} className="cursor-pointer" isPressable>
-                                        <CardHeader className="flex gap-3 text-sm font-semibold p-4 pb-1">
-                                            <Table2 size={18} strokeWidth={2.5} />
-                                            시간표 {index + 1}
-                                        </CardHeader>
-                                        <CardBody>
-                                            <TableView items={schedule} cellHeight="2rem" maxRow={8} isPreview />
-                                        </CardBody>
-                                    </Card>
-                                ))}
-                            </div>
+                        <div className="mt-5">
+                            <h2 className="text-xl font-bold py-4">
+                                총 <span className={filteredData.length === 0 ? "text-gray-500" : "text-primary"}>{filteredData.length}개</span>의
+                                시간표 조합이 생성되었습니다.
+                            </h2>
+                            {filteredData.length === 0 ? (
+                                <Unavailable buttonText="장바구니 수정" routePath="/cart">
+                                    <p className="text-gray-500 text-sm mt-4 mx-4">만들 수 있는 조합이 없어요.</p>
+                                    <p className="text-gray-500 text-sm mb-8 mx-4">공강 날짜를 변경하거나, 그룹이 비어 있는지 확인해보세요.</p>
+                                </Unavailable>
+                            ) : (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-6">
+                                    {filteredData.map((schedule, index) => (
+                                        <Card key={index} onPress={() => handleScheduleClick(schedule)} className="cursor-pointer" isPressable>
+                                            <CardHeader className="flex gap-3 text-sm font-semibold p-4 pb-1">
+                                                <Table2 size={18} strokeWidth={2.5} />
+                                                시간표 {index + 1}
+                                            </CardHeader>
+                                            <CardBody>
+                                                <TableView items={schedule} cellHeight="2rem" maxRow={8} isPreview />
+                                            </CardBody>
+                                        </Card>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </>
                 )}
@@ -169,7 +164,7 @@ const Wizard = () => {
                                 value={scheduleName}
                                 onChange={(e) => {
                                     setScheduleName(e.target.value);
-                                    setIsDuplicateChecked(false); // 이름이 변경되면 중복 확인 상태 초기화
+                                    setIsDuplicateChecked(false);
                                 }}
                                 fullWidth
                             />

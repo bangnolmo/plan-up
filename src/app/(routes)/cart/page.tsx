@@ -11,7 +11,7 @@ import { Button } from "@nextui-org/react";
 import { Trash2, Edit, X, ShoppingBasket, FolderPlus, Search } from "lucide-react";
 import RenameGroupModal from "@/app/_components/modal/RenameGroupModal";
 import ManualItemModal from "@/app/_components/modal/ManualItemModal";
-import AddGroupModal from "@/app/_components/modal/AddGroupModal";
+import CreateGroupModal from "@/app/_components/modal/CreateGroupModal";
 
 interface GroupWithLectures {
     groupName: string;
@@ -24,7 +24,7 @@ const CartTable = () => {
     const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
     const [editingGroupName, setEditingGroupName] = useState<string>("");
     const [isManualModalOpen, setIsManualModalOpen] = useState(false);
-    const [isAddGroupModalOpen, setIsAddGroupModalOpen] = useState(false);
+    const [isCreateGroupModalOpen, setIsCreateGroupModalOpen] = useState(false);
 
     useEffect(() => {
         LocalStorageManager.initialize();
@@ -159,12 +159,12 @@ const CartTable = () => {
                 ))}
             </div>
             <div className="flex justify-center m-8 gap-2">
-                <Button aria-label="manual add" onClick={() => router.push('/lecture')} size="md" variant="flat" startContent={<Search size={20} />}>
+                <Button aria-label="manual add" onClick={() => router.push("/lecture")} size="md" variant="flat" startContent={<Search size={20} />}>
                     개설과목 조회
                 </Button>
                 <Button
                     aria-label="Add Group"
-                    onClick={() => setIsAddGroupModalOpen(true)}
+                    onClick={() => setIsCreateGroupModalOpen(true)}
                     size="md"
                     color="primary"
                     variant="flat"
@@ -175,7 +175,7 @@ const CartTable = () => {
                 </Button>
             </div>
 
-            <AddGroupModal isOpen={isAddGroupModalOpen} onClose={() => setIsAddGroupModalOpen(false)} onChange={handleUpdateLectures} />
+            <CreateGroupModal isOpen={isCreateGroupModalOpen} onClose={() => setIsCreateGroupModalOpen(false)} onChange={handleUpdateLectures} />
             <ManualItemModal isOpen={isManualModalOpen} onClose={() => setIsManualModalOpen(false)} onItemAdd={handleUpdateLectures} />
             <RenameGroupModal
                 isOpen={isRenameModalOpen}

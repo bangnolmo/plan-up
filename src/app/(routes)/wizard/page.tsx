@@ -1,78 +1,40 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Header from "@/app/_components/Header";
 import PageInfo from "@/app/_components/PageInfo";
 import TableView from "@/app/_components/tableview/TableView";
+import Unavailable from "@/app/_components/Unavailable";
 import { CreateTimeTable } from "@/utils/createTimeTable";
 import { Lecture, LocalStorageManager } from "@/utils/localStorageManager";
 import { columns } from "@/app/_configs/timetableColumns";
-import { useEffect, useState } from "react";
-import {
-    Select,
-    SelectItem,
-    Button,
-    Modal,
-    ModalFooter,
-    ModalHeader,
-    ModalBody,
-    ModalContent,
-    Input,
-    Card,
-    CardHeader,
-    CardBody,
-} from "@nextui-org/react";
 import { Table2 } from "lucide-react";
-import Unavailable from "@/app/_components/Unavailable";
+import { useRouter } from "next/navigation";
+import { Select, SelectItem, Card, CardHeader, CardBody } from "@nextui-org/react";
+import CreateTimetableModal from "@/app/_components/modal/CreateTimetableModal";
 
 const Wizard = () => {
+    const router = useRouter();
     const [classifiedTimeTableData, setClassifiedTimeTableData] = useState<{
         [key: string]: Lecture[][];
     }>({});
     const [selectedDaysOff, setSelectedDaysOff] = useState<string[]>([]); // 공강일 선택을 위한 상태
-    const [selectedSchedule, setSelectedSchedule] = useState<Lecture[] | null>(null); // 선택된 시간표를 위한 상태
-    const [modalOpen, setModalOpen] = useState<boolean>(false); // 모달 on & off 시간표 선택 확인 시 모달
-    const [scheduleName, setScheduleName] = useState<string>(""); // 저장할 시간표의 이름
-    const [isDuplicate, setIsDuplicate] = useState<boolean>(false); // 중복 여부 확인
-    const [isDuplicateChecked, setIsDuplicateChecked] = useState<boolean>(false); // 중복 확인 여부 확인
+    const [selectedSchedule, setSelectedSchedule] = useState<Lecture[]>([]);
+    const [isCreateTimetableModalOpen, setIsCreateTimetableModalOpen] = useState(false);
 
     useEffect(() => {
         const testData = LocalStorageManager.getAllGroups();
         const testResult = CreateTimeTable.getValidCombinations(testData, 23);
         setClassifiedTimeTableData(testResult);
-        console.log(testResult);
     }, []);
 
     const handleDaysOffChange = (values: Set<string>) => {
         setSelectedDaysOff(Array.from(values));
     };
 
-    const modalClose = () => {
-        setModalOpen(false);
-        setScheduleName("");
-        setIsDuplicate(false);
-        setIsDuplicateChecked(false);
-    };
-
     const handleScheduleClick = (schedule: Lecture[]) => {
         setSelectedSchedule(schedule);
-        setModalOpen(true);
-    };
-
-    const saveSchedule = () => {
-        console.log("Selected Schedule:", selectedSchedule);
-        console.log("Schedule Name:", scheduleName);
-        if (selectedSchedule) {
-            LocalStorageManager.addTimeTableCombi(scheduleName, selectedSchedule);
-        }
-        setModalOpen(false);
-    };
-
-    const checkDuplicateName = (name: string) => {
-        if (name) {
-            const duplicate = LocalStorageManager.isDupTimeTable(name);
-            setIsDuplicate(duplicate);
-            setIsDuplicateChecked(true);
-        }
+        setIsCreateTimetableModalOpen(true);
     };
 
     const filteredData = Object.entries(classifiedTimeTableData)
@@ -82,6 +44,10 @@ const Wizard = () => {
         .flatMap(([, value]) => value);
 
     const totalLectureCount = LocalStorageManager.getTotalLectureCount();
+
+    const handleRoute = () => {
+        router.push("/timetable");
+    };
 
     return (
         <>
@@ -115,7 +81,7 @@ const Wizard = () => {
                             {filteredData.length === 0 ? (
                                 <Unavailable buttonText="장바구니 수정" routePath="/cart">
                                     <p className="text-gray-500 text-sm mt-4 mx-4">만들 수 있는 조합이 없어요.</p>
-                                    <p className="text-gray-500 text-sm mb-8 mx-4">공강 날짜를 변경하거나, 그룹이 비어 있는지 확인해보세요.</p>
+                                    <p className="text-gray-500 text-sm mb-8 mx-4">공강 날짜를 변경하거나, 비어 있는 그룹이 있는지 확인해보세요.</p>
                                 </Unavailable>
                             ) : (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-6">
@@ -136,58 +102,12 @@ const Wizard = () => {
                     </>
                 )}
             </div>
-
-            <Modal
-                isOpen={modalOpen}
-                onOpenChange={modalClose}
-                isDismissable={false}
-                isKeyboardDismissDisabled={false}
-                closeButton
-                aria-labelledby="modal-title"
-                aria-describedby="modal-description"
-            >
-                <ModalContent>
-                    <ModalHeader>나의 시간표에 추가</ModalHeader>
-                    <ModalBody>
-                        <div
-                            style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "0.5rem",
-                                width: "100%",
-                                marginTop: "1rem",
-                            }}
-                        >
-                            <Input
-                                label="시간표 이름 설정"
-                                placeholder="시간표 이름을 입력하세요."
-                                value={scheduleName}
-                                onChange={(e) => {
-                                    setScheduleName(e.target.value);
-                                    setIsDuplicateChecked(false);
-                                }}
-                                fullWidth
-                            />
-                            <Button color="primary" onPress={() => checkDuplicateName(scheduleName)}>
-                                중복 확인
-                            </Button>
-                        </div>
-                        {isDuplicateChecked &&
-                            (isDuplicate ? (
-                                <p style={{ color: "red", marginTop: "10px" }}>이미 존재하는 이름입니다. 다른 이름을 입력하세요.</p>
-                            ) : (
-                                <p style={{ color: "green", marginTop: "10px" }}>사용 가능한 이름입니다.</p>
-                            ))}
-                        {!isDuplicateChecked && <p style={{ color: "gray", marginTop: "10px" }}>중복 확인을 해주세요.</p>}
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button onPress={modalClose}>취소</Button>
-                        <Button onPress={saveSchedule} isDisabled={(scheduleName.trim() && isDuplicate) || !isDuplicateChecked} color="primary">
-                            확인
-                        </Button>
-                    </ModalFooter>
-                </ModalContent>
-            </Modal>
+            <CreateTimetableModal
+                isOpen={isCreateTimetableModalOpen}
+                onClose={() => setIsCreateTimetableModalOpen(false)}
+                onChange={handleRoute}
+                selectedLectures={selectedSchedule}
+            />
         </>
     );
 };

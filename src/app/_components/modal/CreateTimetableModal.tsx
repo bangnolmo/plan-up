@@ -34,6 +34,7 @@ const CreateTimetableModal: React.FC<CreateTimetableModalProps> = ({ isOpen, onC
         //     onChange();
         //     onClose();
         // }
+        console.log(onChange());
         console.log(selectedLectures);
     };
 

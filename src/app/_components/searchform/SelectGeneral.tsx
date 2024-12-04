@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Autocomplete, AutocompleteItem, AutocompleteSection } from "@nextui-org/react";
-
-interface General {
-    idx: number;
-    name: string;
-}
+import { fetchGeneralData, General } from "@/utils/apis/department";
 
 interface SelectGeneralProps {
     selectedGeneral: string;
@@ -19,20 +15,13 @@ export default function SelectGeneral({ selectedGeneral, onSelectionChange, year
     const [error, setError] = useState<string | null>(null);
     const headingClasses = "flex w-full sticky top-1 z-20 py-1.5 px-2 bg-default-100 shadow-small rounded-small";
 
-    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}department?id=1&year=${year}&hakgi=${hakgi}`;
-
     useEffect(() => {
         const fetchGenerals = async () => {
             setLoading(true);
             setError(null);
 
             try {
-                const response = await fetch(apiUrl);
-                if (!response.ok) {
-                    throw new Error("Failed to fetch general data.");
-                }
-
-                const data: General[] = await response.json();
+                const data = await fetchGeneralData(year, hakgi);
                 setGenerals(data);
             } catch (err) {
                 setError("Failed to load general data.");
@@ -43,7 +32,7 @@ export default function SelectGeneral({ selectedGeneral, onSelectionChange, year
         };
 
         fetchGenerals();
-    }, [apiUrl]);
+    }, [year, hakgi]);
 
     const getCampusFromName = (name: string): string => {
         const parts = name.split("·");

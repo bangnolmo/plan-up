@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Autocomplete, AutocompleteItem, AutocompleteSection } from "@nextui-org/react";
-
-interface Major {
-    idx: string;
-    name: string;
-}
+import { fetchMajors, Major } from "@/utils/apis/department";
 
 interface SelectMajorProps {
     selectedMajor: string;
@@ -19,31 +15,24 @@ export default function SelectMajor({ selectedMajor, onSelectionChange, year, ha
     const [error, setError] = useState<string | null>(null);
     const headingClasses = "flex w-full sticky top-1 z-20 py-1.5 px-2 bg-default-100 shadow-small rounded-small";
 
-    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}department?id=2&year=${String(year)}&hakgi=${String(hakgi)}`;
-
     useEffect(() => {
-        const fetchMajors = async () => {
+        const fetchMajorsData = async () => {
             setLoading(true);
             setError(null);
 
             try {
-                const response = await fetch(apiUrl);
-                if (!response.ok) {
-                    throw new Error("Failed to fetch majors");
-                }
-
-                const data: Major[] = await response.json();
+                const data = await fetchMajors(year, hakgi);
                 setMajors(data);
             } catch (err) {
-                setError("Failed to load majors");
+                setError("Failed to load majors.");
                 console.log(err);
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchMajors();
-    }, [apiUrl]);
+        fetchMajorsData();
+    }, [year, hakgi]);
 
     const getSectionFromName = (name: string): string => {
         const parts = name.split("-");

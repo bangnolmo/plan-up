@@ -8,10 +8,17 @@ import { getTimeTablesByUserEmail, getLecturesByTimeTable, deleteTimeTable } fro
 import { Button } from "@nextui-org/react";
 import { Lecture } from "@/utils/localStorageManager";
 import { enClassTime } from "@/utils/localStorageManager";
+import { useRouter } from "next/navigation";
+import { removeLocalUserData, validateUserEmail } from "@/utils/apis/login";
 
 const TimeTable = () => {
     const [timeTables, setTimeTables] = useState<{ id: number; name: string }[]>([]); // 시간표 리스트
-    const [selectedTimeTable, setSelectedTimeTable] = useState<{ tableIdx: number; tableName: string; lectures: (Lecture & { classTime: number[] })[] } | null>(null); // 선택된 시간표
+    const [selectedTimeTable, setSelectedTimeTable] = useState<{
+        tableIdx: number;
+        tableName: string;
+        lectures: (Lecture & { classTime: number[] })[];
+    } | null>(null); // 선택된 시간표
+    const router = useRouter();
 
     type TimeTable = {
         id: number; // table_id
@@ -19,6 +26,34 @@ const TimeTable = () => {
         year: number; // 연도 (예: 202420)
         owner: string; // 소유자 이메일
     };
+
+    useEffect(() => {
+        if (typeof window === "undefined") return;
+        const accessToken = localStorage.getItem("access_token");
+        const userEmail = localStorage.getItem("user_email");
+
+        if (!accessToken || !userEmail) {
+            router.push("/login");
+            return;
+        }
+
+        const checkUserValidity = async () => {
+            try {
+                const { auth } = await validateUserEmail(accessToken, userEmail);
+
+                if (!auth) {
+                    removeLocalUserData();
+                    router.push("/login");
+                }
+            } catch (error) {
+                console.error("User validation failed:", error);
+                alert("접속 후 오랜 시간이 경과되어 다시 로그인해야 합니다.");
+                removeLocalUserData();
+                router.push("/login");
+            }
+        };
+        checkUserValidity();
+    }, [router]);
 
     useEffect(() => {
         const fetchTimeTables = async () => {
@@ -37,7 +72,6 @@ const TimeTable = () => {
 
                 setTimeTables(simplifiedTables);
 
-                // 첫 번째 시간표 선택
                 if (simplifiedTables.length > 0) {
                     loadTimeTable(simplifiedTables[0].id, simplifiedTables[0].name);
                 }
@@ -102,10 +136,10 @@ const TimeTable = () => {
                                         width: "100%",
                                         padding: "10px",
                                         textAlign: "left",
-                                        backgroundColor:
-                                            selectedTimeTable?.tableIdx === table.id ? "#e0f7fa" : "transparent",
+                                        backgroundColor: selectedTimeTable?.tableIdx === table.id ? "#e2e8f0" : "transparent",
                                         border: "1px solid #ddd",
                                         cursor: "pointer",
+                                        borderRadius: "0.5rem",
                                     }}
                                     onClick={() => loadTimeTable(table.id, table.name)}
                                 >

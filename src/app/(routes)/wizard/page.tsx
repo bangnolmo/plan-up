@@ -10,8 +10,9 @@ import { Lecture, LocalStorageManager } from "@/utils/localStorageManager";
 import { columns } from "@/app/_configs/timetableColumns";
 import { Table2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Select, SelectItem, Card, CardHeader, CardBody, Tabs, Tab, Accordion, AccordionItem } from "@nextui-org/react";
+import { Select, SelectItem, Card, CardHeader, CardBody, Tabs, Tab, Button, Accordion, AccordionItem } from "@nextui-org/react";
 import CreateTimetableModal from "@/app/_components/modal/CreateTimetableModal";
+import NonogramTable from "@/app/_components/nonogram/Nonogram";
 
 const Wizard = () => {
     const router = useRouter();
@@ -24,6 +25,9 @@ const Wizard = () => {
     const [selectedDaysOff, setSelectedDaysOff] = useState<string[]>([]); // 공강일 선택을 위한 상태
     const [selectedSchedule, setSelectedSchedule] = useState<Lecture[]>([]);
     const [isCreateTimetableModalOpen, setIsCreateTimetableModalOpen] = useState(false);
+    const [disabledCells, setDisabledCells] = useState<number[]>([]); // NonogramTable에서 반환된 활성화된 칸 정보
+    const [generatedSchedules, setGeneratedSchedules] = useState<Lecture[][]>([]); // Tab2에서 생성된 시간표 결과
+    const [isNonogramActive, setIsNonogramActive] = useState(true); // Nonogram 활성화 상태
 
     useEffect(() => {
         const testData = LocalStorageManager.getAllGroups();
@@ -50,6 +54,22 @@ const Wizard = () => {
         setIsCreateTimetableModalOpen(true);
     };
 
+    const handleNonogramCellsChange = (activeCells: number[]) => {
+        setDisabledCells(activeCells);
+    };
+
+    const handleGenerateSchedules = () => {
+        const testData = LocalStorageManager.getAllGroups();
+        const validCombinations = CreateTimeTable.getValidCombinationsWithExclusions(testData, 23, new Set(disabledCells));
+        const filteredSchedules = Object.values(validCombinations).flat();
+        setGeneratedSchedules(filteredSchedules);
+        setIsNonogramActive(false); // Nonogram 비활성화
+    };
+
+    const handleResetNonogram = () => {
+        setIsNonogramActive(true); // Nonogram 활성화
+    };
+
     const filteredData = Object.entries(classifiedTimeTableData)
         .filter(([key]) => {
             return selectedDaysOff.every((day) => key.includes(day));
@@ -73,12 +93,13 @@ const Wizard = () => {
     // 각 추천 조건에 따른 설명 문구
     const recommendationDescriptions = {
         mondayOff: "주말 이후 하루만 더 쉬고 싶은 당신을 위한 추천!",
-        fridayOff: "하루 일찍 주말을 맏이하고 싶은 당신을 위한 추천!",
+        fridayOff: "하루 일찍 주말을 맞이하고 싶은 당신을 위한 추천!",
         mondayAndFridayOff: "나는 욕심쟁이, 수강신청에 자신이 있는 당신을 위한 추천!",
         morningOff: "잠자는 숲속의 대학생인, 당신을 위한 추천!",
         maxDaysOff: "학교가 가고 싶지 않아~, 쉬고만 싶은 당신을 위한 추천!",
         noGaps: "수강신청 자신이 없어..., 하지만 우주 공강은 안된다 하는 당신을 위한 추천!",
     };
+
 
     return (
         <>
@@ -120,7 +141,45 @@ const Wizard = () => {
                             </Accordion>
                         )}
                     </Tab>
-                    <Tab key="맞춤 시간표 생성" title="맞춤 시간표 생성"></Tab>
+                    <Tab key="맞춤 시간표 생성" title="맞춤 시간표 생성">
+                        <div className="p-5">
+                            {isNonogramActive ? (
+                                <>
+                                    <h2 className="text-xl font-bold mb-4">맞춤 시간표 생성</h2>
+                                    <p className="text-gray-500 text-sm mb-4">
+                                        클릭하여 제외할 시간을 선택하세요. 선택된 시간은 과목 배치에서 제외됩니다.
+                                    </p>
+                                    <NonogramTable onActiveCellsChange={handleNonogramCellsChange} />
+                                    <Button className="mt-4" color="primary" onPress={handleGenerateSchedules}>
+                                        조회
+                                    </Button>
+                                </>
+                            ) : (
+                                <>
+                                    <div className="flex justify-between items-center">
+                                        <h2 className="text-xl font-bold mb-4">생성된 시간표</h2>
+                                        <Button className="mt-4" color="secondary" onPress={handleResetNonogram}>
+                                            다시 설정
+                                        </Button>
+                                    </div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-6">
+                                        {generatedSchedules.map((schedule, index) => (
+                                            <Card key={index} onPress={() => handleScheduleClick(schedule)} className="cursor-pointer" isPressable>
+                                                <CardHeader className="flex gap-3 text-sm font-semibold p-4 pb-1">
+                                                    <Table2 size={18} strokeWidth={2.5} />
+                                                    시간표 {index + 1}
+                                                </CardHeader>
+                                                <CardBody>
+                                                    <TableView items={schedule} cellHeight="2rem" maxRow={8} isPreview />
+                                                </CardBody>
+                                            </Card>
+                                        ))}
+                                    </div>
+                                    
+                                </>
+                            )}
+                        </div>
+                    </Tab>
                     <Tab key="전체 시간표" title="전체 시간표">
                         <div className="p-5">
                             {totalLectureCount === 0 ? (

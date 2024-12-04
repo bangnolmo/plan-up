@@ -78,6 +78,85 @@ export class CreateTimeTable {
         return classifiedCombinations;
     }
 
+    static getValidCombinationsWithExclusions(
+        groups: LectureGroup[],
+        maxCredits: number,
+        excludedTimes: Set<number>
+    ): {
+        [key: string]: Lecture[][];
+    } {
+        const results: Lecture[][] = [];
+        const seenCombinations = new Set<string>();
+
+        function backtrack(index: number, selected: Lecture[], usedClassTimes: Set<number>, currentCredits: number) {
+            if (currentCredits > maxCredits) return;
+
+            if (index === groups.length) {
+                if (selected.length === groups.length) {
+                    const combinationKey = selected
+                        .map((lecture) => lecture.sub_num)
+                        .sort()
+                        .join(",");
+                    if (!seenCombinations.has(combinationKey)) {
+                        results.push([...selected]);
+                        seenCombinations.add(combinationKey);
+                    }
+                }
+                return;
+            }
+
+            for (const lecture of groups[index].lectures) {
+                // 해당 강의가 제외된 시간대를 포함하지 않는지 확인
+                if (lecture.classTime.every((time) => time === -1 || (!excludedTimes.has(time) && !usedClassTimes.has(time)))) {
+                    lecture.classTime.forEach((time) => {
+                        if (time !== -1) {
+                            usedClassTimes.add(time);
+                        }
+                    });
+                    selected.push(lecture);
+                    backtrack(index + 1, selected, usedClassTimes, currentCredits + lecture.credits);
+                    selected.pop();
+                    lecture.classTime.forEach((time) => {
+                        if (time !== -1) {
+                            usedClassTimes.delete(time);
+                        }
+                    });
+                }
+            }
+        }
+
+        backtrack(0, [], new Set<number>(), 0);
+
+        const classifiedCombinations: { [key: string]: Lecture[][] } = {};
+
+        results.forEach((combination) => {
+            const hasMonday = combination.some((lecture) => lecture.classTime.some((time) => time >= 0 && time <= 9));
+            const hasTuesday = combination.some((lecture) => lecture.classTime.some((time) => time >= 10 && time <= 19));
+            const hasWednesday = combination.some((lecture) => lecture.classTime.some((time) => time >= 20 && time <= 29));
+            const hasThursday = combination.some((lecture) => lecture.classTime.some((time) => time >= 30 && time <= 39));
+            const hasFriday = combination.some((lecture) => lecture.classTime.some((time) => time >= 40 && time <= 49));
+
+            let key = "";
+            if (!hasMonday) key += "월";
+            if (!hasTuesday) key += "화";
+            if (!hasWednesday) key += "수";
+            if (!hasThursday) key += "목";
+            if (!hasFriday) key += "금";
+
+            if (key === "") {
+                key = "공강 없음";
+            }
+
+            if (!classifiedCombinations[key]) {
+                classifiedCombinations[key] = [];
+            }
+
+            classifiedCombinations[key].push(combination);
+        });
+
+        return classifiedCombinations;
+    }
+
     static getIndependentRecommendations(validCombinations: { [key: string]: Lecture[][] }): {
         morningOff: Lecture[][];
         maxDaysOff: Lecture[][];

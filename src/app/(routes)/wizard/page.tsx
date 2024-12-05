@@ -22,6 +22,7 @@ const Wizard = () => {
     const [selectedDaysOff, setSelectedDaysOff] = useState<string[]>([]); // 공강일 선택을 위한 상태
     const [selectedSchedule, setSelectedSchedule] = useState<Lecture[]>([]);
     const [isCreateTimetableModalOpen, setIsCreateTimetableModalOpen] = useState(false);
+    const [showAllSchedules, setShowAllSchedules] = useState(false); // State to track "Load More" action
 
     useEffect(() => {
         const testData = LocalStorageManager.getAllGroups();
@@ -78,6 +79,10 @@ const Wizard = () => {
         router.push("/timetable");
     };
 
+    const handleLoadMore = () => {
+        setShowAllSchedules(true);
+    };
+
     return (
         <>
             <Header />
@@ -114,7 +119,7 @@ const Wizard = () => {
                                 </Unavailable>
                             ) : (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-6">
-                                    {filteredData.map((schedule, index) => (
+                                    {filteredData.slice(0, showAllSchedules ? filteredData.length : 6).map((schedule, index) => (
                                         <Card key={index} onPress={() => handleScheduleClick(schedule)} className="cursor-pointer" isPressable>
                                             <CardHeader className="flex gap-3 text-sm font-semibold p-4 pb-1">
                                                 <Table2 size={18} strokeWidth={2.5} />
@@ -125,6 +130,13 @@ const Wizard = () => {
                                             </CardBody>
                                         </Card>
                                     ))}
+                                </div>
+                            )}
+                            {filteredData.length > 6 && !showAllSchedules && (
+                                <div className="flex justify-center mt-5">
+                                    <Button onClick={handleLoadMore} size="md" variant="flat" color="primary">
+                                        더 보기
+                                    </Button>
                                 </div>
                             )}
                         </div>
